@@ -1,0 +1,57 @@
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap');
+@import "tailwindcss";
+
+@theme inline {
+  --color-navy-950: #050a18;
+  --color-navy-900: #0a1628;
+  --color-navy-800: #0f2240;
+  --color-navy-700: #162d52;
+  --color-navy-600: #1e3a6a;
+  --color-ocean-600: #1a5c8a;
+  --color-ocean-500: #1e6aa1;
+  --color-ocean-400: #2d8ac7;
+  --color-ocean-300: #4da6e0;
+  --color-ocean-50: #eef7fc;
+  --color-gold-500: #c8a45c;
+  --color-gold-400: #d4b872;
+  --color-gold-300: #e0cc88;
+  --color-warm-50: #fefcf8;
+  --color-warm-100: #fdf8ef;
+  --color-gray-50: #f8fafc;
+  --color-gray-100: #f1f5f9;
+  --color-gray-200: #e2e8f0;
+  --color-gray-300: #cbd5e1;
+  --color-gray-400: #94a3b8;
+  --color-gray-500: #64748b;
+  --color-gray-600: #475569;
+  --color-gray-700: #334155;
+  --color-gray-800: #1e293b;
+  --color-gray-900: #0f172a;
+  --font-pretendard: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+  --font-montserrat: 'Montserrat', sans-serif;
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #1e293b;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-pretendard);
+  overflow-x: hidden;
+}
+
+html { scroll-behavior: smooth; }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #f1f5f9; }
+::-webkit-scrollbar-thumb { background: var(--color-ocean-400); border-radius: 3px; }
+
+a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
+  outline: 2px solid var(--color-ocean-400);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
