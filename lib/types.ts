@@ -1,3 +1,12 @@
+export interface UserProfile {
+  uid: string;
+  email: string;
+  name: string;
+  phone: string;
+  role: 'customer' | 'admin';
+  createdAt?: unknown;
+}
+
 export interface Category {
   id: string;
   name: string;

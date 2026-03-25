@@ -23,7 +23,7 @@ export default function ProductsPage() {
 
   return (
     <main className="bg-white font-[family-name:var(--font-pretendard)]">
-      <Navbar cartCount={0} />
+      <Navbar />
       <div className="mx-auto max-w-7xl px-4 pt-24 pb-20 lg:px-8">
         <div className="mb-10">
           <p className="mb-2 font-[family-name:var(--font-montserrat)] text-sm font-semibold uppercase tracking-[0.25em] text-ocean-500">All Products</p>

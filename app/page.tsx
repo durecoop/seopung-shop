@@ -26,8 +26,8 @@ export default function ShopHome() {
   const newProducts = products.filter(p => p.isNew);
 
   return (
-    <main className="bg-white font-[family-name:var(--font-pretendard)]">
-      <Navbar cartCount={0} />
+    <main id="main-content" className="bg-white font-[family-name:var(--font-pretendard)]">
+      <Navbar />
 
       {/* Hero */}
       <section className="relative flex h-[55vh] min-h-[400px] items-center justify-center overflow-hidden pt-16 bg-gradient-to-b from-ocean-50 via-white to-white">
@@ -40,7 +40,7 @@ export default function ShopHome() {
           <p className="mx-auto mt-6 max-w-xl text-lg text-gray-500">HACCP·ASC·MSC 인증 프리미엄 수산물을 산지 직송으로 배송합니다</p>
           <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <Link href="/products" className="inline-flex items-center gap-2 rounded-xl bg-ocean-500 px-8 py-3.5 font-semibold text-white transition-all hover:bg-ocean-600 hover:shadow-lg">전체상품 보기 &rarr;</Link>
-            <Link href="/products/gulbi" className="inline-flex items-center gap-2 rounded-xl border border-gray-300 px-8 py-3.5 font-semibold text-gray-700 transition-all hover:border-ocean-400 hover:text-ocean-600">영광굴비 선물세트</Link>
+            <Link href="/products/gift-set" className="inline-flex items-center gap-2 rounded-xl border border-gray-300 px-8 py-3.5 font-semibold text-gray-700 transition-all hover:border-ocean-400 hover:text-ocean-600">영광굴비 선물세트</Link>
           </div>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3 text-xs text-gray-400">
             {['HACCP 인증', 'ASC·MSC 인증', '산지 직송', '5만원 이상 무료배송'].map(t => (
@@ -99,7 +99,7 @@ export default function ShopHome() {
               <span className="inline-block rounded-full bg-gold-500/20 px-4 py-1 text-sm font-medium text-gold-400">프리미엄 영광굴비</span>
               <h2 className="mt-4 text-3xl font-bold leading-tight text-white md:text-4xl">전통 장인이 만드는<br />영광굴비 선물세트</h2>
               <p className="mt-4 text-white/70">여수 직송 참조기를 전통 아가미 섭간으로 정성껏 숙성합니다.</p>
-              <Link href="/products/gulbi" className="mt-6 inline-flex items-center gap-2 rounded-xl bg-gold-500 px-6 py-3 font-semibold text-navy-950 hover:bg-gold-400">굴비 보러가기 &rarr;</Link>
+              <Link href="/products/gift-set" className="mt-6 inline-flex items-center gap-2 rounded-xl bg-gold-500 px-6 py-3 font-semibold text-navy-950 hover:bg-gold-400">굴비 보러가기 &rarr;</Link>
             </div>
             <div className="mt-8 flex h-56 w-full items-center justify-center rounded-2xl bg-white/10 md:mt-0 md:h-64 md:w-80">
               <span className="text-sm text-white/30">굴비 이미지</span>

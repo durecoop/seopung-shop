@@ -27,7 +27,7 @@ export default function CategoryPage() {
 
   return (
     <main className="bg-white font-[family-name:var(--font-pretendard)]">
-      <Navbar cartCount={0} />
+      <Navbar />
       <div className="mx-auto max-w-7xl px-4 pt-24 pb-20 lg:px-8">
         <div className="mb-2 flex items-center gap-2 text-sm text-gray-400">
           <Link href="/products" className="hover:text-gray-700">전체상품</Link><span>/</span>

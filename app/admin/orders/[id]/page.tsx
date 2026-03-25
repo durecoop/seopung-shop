@@ -14,13 +14,14 @@ export default function AdminOrderDetailPage() {
   const [order, setOrder] = useState<Order | null>(null);
   const [status, setStatus] = useState('');
   const [trackingNumber, setTrackingNumber] = useState('');
+  const [trackingCarrier, setTrackingCarrier] = useState('CJ대한통운');
   const [adminNote, setAdminNote] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     getOrderById(id).then(o => {
       setOrder(o);
-      if (o) { setStatus(o.status); setAdminNote(o.adminNote || ''); setTrackingNumber(o.trackingNumber || ''); }
+      if (o) { setStatus(o.status); setAdminNote(o.adminNote || ''); setTrackingNumber(o.trackingNumber || ''); setTrackingCarrier(o.trackingCarrier || 'CJ대한통운'); }
       setLoading(false);
     });
   }, [id]);
@@ -32,8 +33,9 @@ export default function AdminOrderDetailPage() {
 
   const handleStatusChange = async (newStatus: string) => {
     const updateData: Record<string, unknown> = { status: newStatus };
-    if (newStatus === 'shipped' && trackingNumber) {
-      updateData.trackingNumber = trackingNumber;
+    if (newStatus === 'shipped') {
+      if (trackingNumber) updateData.trackingNumber = trackingNumber;
+      updateData.trackingCarrier = trackingCarrier;
     }
     await updateOrder(order.id, updateData as Partial<Order>);
     setStatus(newStatus);
@@ -84,7 +86,7 @@ export default function AdminOrderDetailPage() {
               <h2 className="mb-4 text-lg font-semibold text-gray-800">배송 정보</h2>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div><label className="mb-1 block text-sm text-gray-500">택배사</label>
-                  <select className="w-full rounded-lg border border-gray-200 px-4 py-2.5 text-sm focus:border-ocean-400 focus:outline-none"><option>CJ대한통운</option><option>한진택배</option><option>롯데택배</option></select></div>
+                  <select value={trackingCarrier} onChange={e => setTrackingCarrier(e.target.value)} className="w-full rounded-lg border border-gray-200 px-4 py-2.5 text-sm focus:border-ocean-400 focus:outline-none"><option>CJ대한통운</option><option>한진택배</option><option>롯데택배</option></select></div>
                 <div><label className="mb-1 block text-sm text-gray-500">운송장 번호</label>
                   <input type="text" value={trackingNumber} onChange={e => setTrackingNumber(e.target.value)} className="w-full rounded-lg border border-gray-200 px-4 py-2.5 text-sm focus:border-ocean-400 focus:outline-none" placeholder="운송장 번호" /></div>
               </div>

@@ -2,12 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { getProductBySlug, getCategories, getStoreSettings } from '@/lib/db';
 import { formatPrice } from '@/lib/types';
 import type { Product, Category, StoreSettings } from '@/lib/types';
+import { addToCart } from '@/lib/cart';
 
 export default function ProductDetailPage() {
   const { category, slug } = useParams<{ category: string; slug: string }>();
@@ -17,7 +19,7 @@ export default function ProductDetailPage() {
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
   const [loading, setLoading] = useState(true);
-
+  const [selectedImg, setSelectedImg] = useState(0);
   useEffect(() => {
     Promise.all([getProductBySlug(slug), getCategories(), getStoreSettings()]).then(([p, cats, s]) => {
       setProduct(p);
@@ -27,6 +29,12 @@ export default function ProductDetailPage() {
     });
   }, [category, slug]);
 
+  useEffect(() => {
+    if (product) {
+      document.title = `${product.name} | 서풍몰`;
+    }
+  }, [product]);
+
   if (loading) return <main className="flex min-h-screen items-center justify-center bg-white"><p className="text-gray-400">로딩 중...</p></main>;
   if (!product || !cat) return <main className="flex min-h-screen items-center justify-center bg-white"><p className="text-gray-400">상품을 찾을 수 없습니다.</p></main>;
 
@@ -34,11 +42,31 @@ export default function ProductDetailPage() {
   const totalPrice = product.price * qty;
   const freeShipping = settings ? totalPrice >= settings.freeShippingThreshold : false;
 
-  const handleAddCart = () => { setAdded(true); setTimeout(() => setAdded(false), 2000); };
+  const handleAddCart = () => {
+    if (!product) return;
+    addToCart(product, qty);
+    setAdded(true);
+    setTimeout(() => setAdded(false), 2000);
+  };
 
   return (
     <main className="bg-white font-[family-name:var(--font-pretendard)]">
-      <Navbar cartCount={0} />
+      {product && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'Product',
+          name: product.name,
+          description: product.description,
+          image: product.images?.[0],
+          offers: {
+            '@type': 'Offer',
+            price: product.price,
+            priceCurrency: 'KRW',
+            availability: product.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+          },
+        }) }} />
+      )}
+      <Navbar />
       <div className="mx-auto max-w-7xl px-4 pt-24 pb-20 lg:px-8">
         <div className="mb-6 flex items-center gap-2 text-sm text-gray-400">
           <Link href="/products" className="hover:text-gray-700">전체상품</Link><span>/</span>
@@ -46,16 +74,28 @@ export default function ProductDetailPage() {
           <span className="text-gray-700">{product.name}</span>
         </div>
         <div className="grid gap-10 lg:grid-cols-2">
-          <div className="aspect-square overflow-hidden rounded-2xl border border-gray-200 bg-gray-50">
-            <div className="flex h-full items-center justify-center">
+          <div>
+            <div className="relative aspect-square overflow-hidden rounded-2xl border border-gray-200 bg-gray-50">
               {product.images && product.images.length > 0 ? (
-                <img src={product.images[0]} alt={product.name} className="h-full w-full object-cover" />
+                <Image src={product.images[selectedImg] || product.images[0]} alt={product.name} fill sizes="(max-width: 1024px) 100vw, 50vw" className="object-cover" />
               ) : (
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={0.5} stroke="currentColor" className="h-32 w-32 text-gray-200">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0 0 22.5 18.75V5.25A2.25 2.25 0 0 0 20.25 3H3.75A2.25 2.25 0 0 0 1.5 5.25v13.5A2.25 2.25 0 0 0 3.75 21Z" />
-                </svg>
+                <div className="flex h-full items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={0.5} stroke="currentColor" className="h-32 w-32 text-gray-200">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0 0 22.5 18.75V5.25A2.25 2.25 0 0 0 20.25 3H3.75A2.25 2.25 0 0 0 1.5 5.25v13.5A2.25 2.25 0 0 0 3.75 21Z" />
+                  </svg>
+                </div>
               )}
             </div>
+            {product.images && product.images.length > 1 && (
+              <div className="mt-3 flex gap-2 overflow-x-auto">
+                {product.images.map((img, i) => (
+                  <button key={i} onClick={() => setSelectedImg(i)}
+                    className={`relative h-20 w-20 shrink-0 overflow-hidden rounded-lg border-2 transition-all ${selectedImg === i ? 'border-ocean-500 ring-1 ring-ocean-300' : 'border-gray-200 hover:border-gray-400'}`}>
+                    <Image src={img} alt={`${product.name} ${i + 1}`} width={80} height={80} className="h-full w-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
           <div>
             <div className="flex flex-wrap gap-2">

@@ -2,19 +2,24 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { getProducts, getOrders } from '@/lib/db';
+import { getProducts, getOrders, getAnalytics } from '@/lib/db';
+import type { DailyStats } from '@/lib/db';
 import { formatPrice, ORDER_STATUS_LABELS } from '@/lib/types';
 import type { Product, Order } from '@/lib/types';
 
 export default function AdminDashboard() {
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
+  const [shopStats, setShopStats] = useState<{ daily: DailyStats[]; total: number; today: number }>({ daily: [], total: 0, today: 0 });
+  const [webStats, setWebStats] = useState<{ daily: DailyStats[]; total: number; today: number }>({ daily: [], total: 0, today: 0 });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    Promise.all([getProducts(), getOrders()]).then(([p, o]) => {
+    Promise.all([getProducts(), getOrders(), getAnalytics('shop', 7), getAnalytics('web', 7)]).then(([p, o, ss, ws]) => {
       setProducts(p);
       setOrders(o);
+      setShopStats(ss);
+      setWebStats(ws);
       setLoading(false);
     });
   }, []);
@@ -28,6 +33,38 @@ export default function AdminDashboard() {
   return (
     <div>
       <h1 className="mb-8 text-2xl font-bold text-gray-900">대시보드</h1>
+
+      {/* 방문자 통계 */}
+      <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="rounded-2xl border border-blue-100 bg-gradient-to-br from-blue-50 to-white p-5 shadow-sm">
+          <p className="text-xs font-medium text-blue-400">쇼핑몰 오늘 방문</p>
+          <p className="mt-1 font-[family-name:var(--font-montserrat)] text-3xl font-bold text-blue-600">{shopStats.today.toLocaleString()}</p>
+          <p className="mt-1 text-xs text-gray-400">누적 {shopStats.total.toLocaleString()}회</p>
+        </div>
+        <div className="rounded-2xl border border-emerald-100 bg-gradient-to-br from-emerald-50 to-white p-5 shadow-sm">
+          <p className="text-xs font-medium text-emerald-400">홈페이지 오늘 방문</p>
+          <p className="mt-1 font-[family-name:var(--font-montserrat)] text-3xl font-bold text-emerald-600">{webStats.today.toLocaleString()}</p>
+          <p className="mt-1 text-xs text-gray-400">누적 {webStats.total.toLocaleString()}회</p>
+        </div>
+        <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+          <p className="text-xs font-medium text-gray-400">쇼핑몰 최근 7일</p>
+          <div className="mt-2 flex items-end gap-1" style={{ height: 40 }}>
+            {(shopStats.daily.length > 0 ? shopStats.daily.slice(0, 7).reverse() : Array(7).fill({ views: 0 })).map((d, i) => {
+              const max = Math.max(...shopStats.daily.map(x => x.views), 1);
+              return <div key={i} className="flex-1 rounded-sm bg-blue-400" style={{ height: `${Math.max((d.views / max) * 100, 4)}%` }} title={`${d.date || ''}: ${d.views}회`} />;
+            })}
+          </div>
+        </div>
+        <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+          <p className="text-xs font-medium text-gray-400">홈페이지 최근 7일</p>
+          <div className="mt-2 flex items-end gap-1" style={{ height: 40 }}>
+            {(webStats.daily.length > 0 ? webStats.daily.slice(0, 7).reverse() : Array(7).fill({ views: 0 })).map((d, i) => {
+              const max = Math.max(...webStats.daily.map(x => x.views), 1);
+              return <div key={i} className="flex-1 rounded-sm bg-emerald-400" style={{ height: `${Math.max((d.views / max) * 100, 4)}%` }} title={`${d.date || ''}: ${d.views}회`} />;
+            })}
+          </div>
+        </div>
+      </div>
 
       <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[

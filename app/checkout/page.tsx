@@ -1,33 +1,135 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { formatPrice, STORE_SETTINGS } from '@/lib/mock-data';
+import { getCart, type CartItemData } from '@/lib/cart';
+import { generateOrderNumber, createOrder, getStoreSettings } from '@/lib/db';
+import { formatPrice } from '@/lib/types';
+import type { StoreSettings } from '@/lib/types';
 
 export default function CheckoutPage() {
   const router = useRouter();
   const [form, setForm] = useState({ name: '', phone: '', email: '', postalCode: '', address: '', addressDetail: '', deliveryMemo: '', depositorName: '' });
+  const [cartItems, setCartItems] = useState<CartItemData[]>([]);
+  const [settings, setSettings] = useState<StoreSettings | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const orderItems = [
-    { name: '고등어필렛 1kg', price: 15900, qty: 2 },
-    { name: '참조기 굴비세트 10미', price: 89000, qty: 1 },
-    { name: '해물탕 밀키트 2인분', price: 19900, qty: 1 },
-  ];
-  const subtotal = orderItems.reduce((s, i) => s + i.price * i.qty, 0);
-  const shippingFee = subtotal >= STORE_SETTINGS.freeShippingThreshold ? 0 : STORE_SETTINGS.shippingFee;
-  const total = subtotal + shippingFee;
+  const searchAddress = () => {
+    if (typeof window === 'undefined') return;
 
-  const handleSubmit = (e: React.FormEvent) => { e.preventDefault(); router.push('/checkout/complete?order=SP-20260324-001'); };
+    const openPostcode = () => {
+      new (window as any).daum.Postcode({
+        oncomplete: (data: any) => {
+          setForm(prev => ({
+            ...prev,
+            postalCode: data.zonecode,
+            address: data.roadAddress || data.jibunAddress,
+          }));
+          setErrors(prev => {
+            const next = { ...prev };
+            delete next.postalCode;
+            delete next.address;
+            return next;
+          });
+        },
+      }).open();
+    };
+
+    if ((window as any).daum?.Postcode) {
+      openPostcode();
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
+    script.onload = () => openPostcode();
+    document.head.appendChild(script);
+  };
+
+  const validate = (): boolean => {
+    const newErrors: Record<string, string> = {};
+    if (!form.name.trim()) newErrors.name = '수령인을 입력해주세요';
+    if (!/^01[016789]-?\d{3,4}-?\d{4}$/.test(form.phone.replace(/-/g, ''))) newErrors.phone = '올바른 연락처를 입력해주세요';
+    if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) newErrors.email = '올바른 이메일을 입력해주세요';
+    if (!form.postalCode.trim()) newErrors.postalCode = '주소를 검색해주세요';
+    if (!form.address.trim()) newErrors.address = '주소를 입력해주세요';
+    if (!form.depositorName.trim()) newErrors.depositorName = '입금자명을 입력해주세요';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  useEffect(() => {
+    setCartItems(getCart());
+    getStoreSettings().then(s => setSettings(s as StoreSettings));
+  }, []);
+
+  const shippingFee = settings ? settings.shippingFee : 3000;
+  const freeShippingThreshold = settings ? settings.freeShippingThreshold : 50000;
+  const bankName = settings?.bankName || '농협';
+  const bankAccount = settings?.bankAccount || '';
+  const accountHolder = settings?.accountHolder || '';
+
+  const subtotal = cartItems.reduce((s, i) => s + i.price * i.qty, 0);
+  const shipping = subtotal >= freeShippingThreshold ? 0 : shippingFee;
+  const total = subtotal + shipping;
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validate()) return;
+    if (submitting || cartItems.length === 0) return;
+    setSubmitting(true);
+    try {
+      const orderNumber = await generateOrderNumber();
+      await createOrder({
+        orderNumber,
+        status: 'pending_payment',
+        guestName: form.name,
+        guestPhone: form.phone,
+        guestEmail: form.email,
+        items: cartItems.map(i => ({
+          productId: i.productId,
+          productName: i.name,
+          price: i.price,
+          quantity: i.qty,
+        })),
+        totalAmount: total,
+        shippingFee: shipping,
+        recipientName: form.name,
+        recipientPhone: form.phone,
+        address: form.address,
+        addressDetail: form.addressDetail,
+        postalCode: form.postalCode,
+        deliveryMemo: form.deliveryMemo,
+        depositorName: form.depositorName,
+      });
+      router.push(`/checkout/complete?orderNumber=${encodeURIComponent(orderNumber)}&total=${total}`);
+    } catch (err) {
+      console.error('Order creation failed:', err);
+      alert('주문 처리 중 오류가 발생했습니다. 다시 시도해 주세요.');
+      setSubmitting(false);
+    }
+  };
 
   const inputCls = "w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-300 focus:border-ocean-400 focus:outline-none focus:ring-1 focus:ring-ocean-400/30";
+
+  if (cartItems.length === 0 && typeof window !== 'undefined') {
+    // Only show empty after client hydration
+  }
 
   return (
     <main className="bg-gray-50 min-h-screen font-[family-name:var(--font-pretendard)]">
       <Navbar />
       <div className="mx-auto max-w-5xl px-4 pt-24 pb-20 lg:px-8">
         <h1 className="mb-8 text-3xl font-bold text-gray-900">주문서</h1>
+        {cartItems.length === 0 ? (
+          <div className="py-20 text-center">
+            <p className="text-lg text-gray-400">주문할 상품이 없습니다</p>
+            <a href="/products" className="mt-4 inline-block text-ocean-500 hover:text-ocean-600">상품 보러가기 &rarr;</a>
+          </div>
+        ) : (
         <form onSubmit={handleSubmit}>
           <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
             <div className="space-y-6">
@@ -35,16 +137,16 @@ export default function CheckoutPage() {
               <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
                 <h2 className="mb-5 text-lg font-bold text-gray-900">배송 정보</h2>
                 <div className="space-y-4">
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <div><label className="mb-1 block text-sm text-gray-500">수령인 *</label><input type="text" required value={form.name} onChange={e => setForm({...form, name: e.target.value})} className={inputCls} placeholder="이름" /></div>
-                    <div><label className="mb-1 block text-sm text-gray-500">연락처 *</label><input type="tel" required value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} className={inputCls} placeholder="010-0000-0000" /></div>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div><label className="mb-1 block text-sm text-gray-500">수령인 *</label><input type="text" required value={form.name} onChange={e => { setForm({...form, name: e.target.value}); if (errors.name) setErrors(prev => { const n = {...prev}; delete n.name; return n; }); }} className={inputCls} placeholder="이름" />{errors.name && <p className="mt-1 text-xs text-red-500">{errors.name}</p>}</div>
+                    <div><label className="mb-1 block text-sm text-gray-500">연락처 *</label><input type="tel" required value={form.phone} onChange={e => { setForm({...form, phone: e.target.value}); if (errors.phone) setErrors(prev => { const n = {...prev}; delete n.phone; return n; }); }} className={inputCls} placeholder="010-0000-0000" />{errors.phone && <p className="mt-1 text-xs text-red-500">{errors.phone}</p>}</div>
                   </div>
-                  <div><label className="mb-1 block text-sm text-gray-500">이메일</label><input type="email" value={form.email} onChange={e => setForm({...form, email: e.target.value})} className={inputCls} placeholder="주문 확인 이메일" /></div>
-                  <div className="flex gap-3">
-                    <div className="flex-1"><label className="mb-1 block text-sm text-gray-500">우편번호 *</label><input type="text" required value={form.postalCode} onChange={e => setForm({...form, postalCode: e.target.value})} className={inputCls} placeholder="우편번호" /></div>
-                    <button type="button" className="mt-6 shrink-0 rounded-lg border border-ocean-400 px-4 py-2.5 text-sm text-ocean-500 hover:bg-ocean-50">주소 검색</button>
+                  <div><label className="mb-1 block text-sm text-gray-500">이메일</label><input type="email" value={form.email} onChange={e => { setForm({...form, email: e.target.value}); if (errors.email) setErrors(prev => { const n = {...prev}; delete n.email; return n; }); }} className={inputCls} placeholder="주문 확인 이메일" />{errors.email && <p className="mt-1 text-xs text-red-500">{errors.email}</p>}</div>
+                  <div className="flex items-end gap-3">
+                    <div className="flex-1"><label className="mb-1 block text-sm text-gray-500">우편번호 *</label><input type="text" required readOnly value={form.postalCode} className={inputCls + ' cursor-pointer bg-gray-50'} placeholder="우편번호" onClick={searchAddress} />{errors.postalCode && <p className="mt-1 text-xs text-red-500">{errors.postalCode}</p>}</div>
+                    <button type="button" onClick={searchAddress} className="shrink-0 rounded-lg border border-ocean-400 px-4 py-2.5 text-sm text-ocean-500 hover:bg-ocean-50">주소 검색</button>
                   </div>
-                  <div><label className="mb-1 block text-sm text-gray-500">주소 *</label><input type="text" required value={form.address} onChange={e => setForm({...form, address: e.target.value})} className={inputCls} placeholder="기본 주소" /></div>
+                  <div><label className="mb-1 block text-sm text-gray-500">주소 *</label><input type="text" required readOnly value={form.address} className={inputCls + ' bg-gray-50'} placeholder="기본 주소" onClick={searchAddress} />{errors.address && <p className="mt-1 text-xs text-red-500">{errors.address}</p>}</div>
                   <div><input type="text" value={form.addressDetail} onChange={e => setForm({...form, addressDetail: e.target.value})} className={inputCls} placeholder="상세 주소" /></div>
                   <div><label className="mb-1 block text-sm text-gray-500">배송 메모</label>
                     <select value={form.deliveryMemo} onChange={e => setForm({...form, deliveryMemo: e.target.value})} className={inputCls}>
@@ -65,12 +167,12 @@ export default function CheckoutPage() {
                     <span className="font-semibold text-gray-800">무통장 입금</span>
                   </div>
                   <div className="mt-3 space-y-1 rounded-lg bg-white p-3 text-sm border border-gray-100">
-                    <p className="text-gray-500">은행: <span className="font-semibold text-gray-800">{STORE_SETTINGS.bankName}</span></p>
-                    <p className="text-gray-500">계좌: <span className="font-semibold text-gray-800">{STORE_SETTINGS.bankAccount}</span></p>
-                    <p className="text-gray-500">예금주: <span className="font-semibold text-gray-800">{STORE_SETTINGS.accountHolder}</span></p>
+                    <p className="text-gray-500">은행: <span className="font-semibold text-gray-800">{bankName}</span></p>
+                    <p className="text-gray-500">계좌: <span className="font-semibold text-gray-800">{bankAccount}</span></p>
+                    <p className="text-gray-500">예금주: <span className="font-semibold text-gray-800">{accountHolder}</span></p>
                   </div>
                 </div>
-                <div className="mt-4"><label className="mb-1 block text-sm text-gray-500">입금자명 *</label><input type="text" required value={form.depositorName} onChange={e => setForm({...form, depositorName: e.target.value})} className={inputCls} placeholder="입금자명" /></div>
+                <div className="mt-4"><label className="mb-1 block text-sm text-gray-500">입금자명 *</label><input type="text" required value={form.depositorName} onChange={e => { setForm({...form, depositorName: e.target.value}); if (errors.depositorName) setErrors(prev => { const n = {...prev}; delete n.depositorName; return n; }); }} className={inputCls} placeholder="입금자명" />{errors.depositorName && <p className="mt-1 text-xs text-red-500">{errors.depositorName}</p>}</div>
               </div>
             </div>
             {/* Summary */}
@@ -78,22 +180,25 @@ export default function CheckoutPage() {
               <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
                 <h3 className="mb-4 text-lg font-bold text-gray-900">주문 상품</h3>
                 <div className="space-y-3">
-                  {orderItems.map((item, i) => (
-                    <div key={i} className="flex justify-between text-sm"><span className="text-gray-500">{item.name} x {item.qty}</span><span className="font-[family-name:var(--font-montserrat)] text-gray-800">{formatPrice(item.price * item.qty)}</span></div>
+                  {cartItems.map((item) => (
+                    <div key={item.productId} className="flex justify-between text-sm"><span className="text-gray-500">{item.name} x {item.qty}</span><span className="font-[family-name:var(--font-montserrat)] text-gray-800">{formatPrice(item.price * item.qty)}</span></div>
                   ))}
                 </div>
                 <hr className="my-4 border-gray-100" />
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between"><span className="text-gray-500">상품금액</span><span className="font-[family-name:var(--font-montserrat)]">{formatPrice(subtotal)}원</span></div>
-                  <div className="flex justify-between"><span className="text-gray-500">배송비</span><span className="font-[family-name:var(--font-montserrat)] text-emerald-500">{shippingFee === 0 ? '무료' : `${formatPrice(shippingFee)}원`}</span></div>
+                  <div className="flex justify-between"><span className="text-gray-500">배송비</span><span className="font-[family-name:var(--font-montserrat)] text-emerald-500">{shipping === 0 ? '무료' : `${formatPrice(shipping)}원`}</span></div>
                   <hr className="border-gray-100" />
                   <div className="flex items-baseline justify-between"><span className="font-semibold text-gray-900">결제금액</span><span className="font-[family-name:var(--font-montserrat)] text-2xl font-bold text-ocean-600">{formatPrice(total)}원</span></div>
                 </div>
-                <button type="submit" className="mt-6 w-full rounded-xl bg-ocean-500 py-3.5 font-semibold text-white transition-all hover:bg-ocean-600">{formatPrice(total)}원 주문하기</button>
+                <button type="submit" disabled={submitting} className="mt-6 w-full rounded-xl bg-ocean-500 py-3.5 font-semibold text-white transition-all hover:bg-ocean-600 disabled:opacity-50">
+                  {submitting ? '주문 처리 중...' : `${formatPrice(total)}원 주문하기`}
+                </button>
               </div>
             </div>
           </div>
         </form>
+        )}
       </div>
       <Footer />
     </main>

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { addProduct, getCategories } from '@/lib/db';
+import { addProduct, getCategories, uploadProductImage } from '@/lib/db';
 import type { Category } from '@/lib/types';
 
 export default function AdminProductNewPage() {
@@ -14,8 +14,31 @@ export default function AdminProductNewPage() {
     name: '', categorySlug: 'frozen', price: '', originalPrice: '', weight: '', unit: 'pack',
     stock: '', description: '', detail: '', tags: '', isFeatured: false, isNew: false,
   });
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => { getCategories().then(setCategories); }, []);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    setImageFiles(prev => [...prev, ...files]);
+    files.forEach(f => {
+      const reader = new FileReader();
+      reader.onload = () => setImagePreviews(prev => [...prev, reader.result as string]);
+      reader.readAsDataURL(f);
+    });
+  };
+
+  const removeImage = (idx: number) => {
+    setImageFiles(prev => prev.filter((_, i) => i !== idx));
+    setImagePreviews(prev => prev.filter((_, i) => i !== idx));
+  };
+
+  const removeUrlImage = (idx: number) => {
+    setImageUrls(prev => prev.filter((_, i) => i !== idx));
+  };
 
   const inputCls = "w-full rounded-lg border border-gray-200 px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-300 focus:border-ocean-400 focus:outline-none focus:ring-1 focus:ring-ocean-400/30";
 
@@ -23,6 +46,22 @@ export default function AdminProductNewPage() {
     e.preventDefault();
     setSaving(true);
     const slug = form.name.toLowerCase().replace(/[^a-z0-9가-힣]/g, '-').replace(/-+/g, '-');
+
+    // 이미지 업로드
+    const uploadedUrls: string[] = [...imageUrls];
+    if (imageFiles.length > 0) {
+      setUploading(true);
+      for (const file of imageFiles) {
+        try {
+          const url = await uploadProductImage(file, slug);
+          uploadedUrls.push(url);
+        } catch (err) {
+          console.error('이미지 업로드 실패:', err);
+        }
+      }
+      setUploading(false);
+    }
+
     await addProduct({
       categorySlug: form.categorySlug,
       name: form.name,
@@ -34,7 +73,7 @@ export default function AdminProductNewPage() {
       unit: form.unit,
       weight: form.weight,
       stock: Number(form.stock),
-      images: [],
+      images: uploadedUrls,
       tags: form.tags.split(',').map(t => t.trim()).filter(Boolean),
       isFeatured: form.isFeatured,
       isNew: form.isNew,
@@ -71,6 +110,49 @@ export default function AdminProductNewPage() {
                 <input type="text" value={form.description} onChange={e => setForm({...form, description: e.target.value})} className={inputCls} placeholder="상품 한 줄 설명" /></div>
               <div><label className="mb-1 block text-sm text-gray-500">상세 정보</label>
                 <textarea rows={5} value={form.detail} onChange={e => setForm({...form, detail: e.target.value})} className={inputCls} placeholder={"원산지: 국내산\n중량: 1kg\n보관: 냉동 -18°C 이하"} /></div>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+            <h2 className="mb-4 text-lg font-semibold text-gray-800">상품 이미지</h2>
+            <div className="space-y-4">
+              {/* 기존 URL 이미지 입력 */}
+              <div>
+                <label className="mb-1 block text-sm text-gray-500">이미지 URL 직접 입력</label>
+                <div className="flex gap-2">
+                  <input type="text" id="urlInput" className={inputCls} placeholder="https://... 이미지 URL" />
+                  <button type="button" onClick={() => {
+                    const input = document.getElementById('urlInput') as HTMLInputElement;
+                    if (input.value.trim()) { setImageUrls(prev => [...prev, input.value.trim()]); input.value = ''; }
+                  }} className="shrink-0 rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 hover:bg-gray-200">추가</button>
+                </div>
+              </div>
+              {/* 파일 업로드 */}
+              <div>
+                <label className="mb-1 block text-sm text-gray-500">파일 업로드 (여러 장 가능)</label>
+                <input type="file" accept="image/*" multiple onChange={handleImageChange}
+                  className="w-full text-sm text-gray-500 file:mr-3 file:rounded-lg file:border-0 file:bg-ocean-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-ocean-600 hover:file:bg-ocean-100" />
+              </div>
+              {/* 미리보기 */}
+              {(imagePreviews.length > 0 || imageUrls.length > 0) && (
+                <div className="flex flex-wrap gap-2">
+                  {imageUrls.map((url, i) => (
+                    <div key={'url-' + i} className="group relative h-20 w-20 overflow-hidden rounded-lg border border-gray-200">
+                      <img src={url} alt="" className="h-full w-full object-cover" />
+                      <button type="button" onClick={() => removeUrlImage(i)}
+                        className="absolute inset-0 flex items-center justify-center bg-black/50 text-white opacity-0 transition-opacity group-hover:opacity-100">✕</button>
+                    </div>
+                  ))}
+                  {imagePreviews.map((src, i) => (
+                    <div key={'file-' + i} className="group relative h-20 w-20 overflow-hidden rounded-lg border border-gray-200">
+                      <img src={src} alt="" className="h-full w-full object-cover" />
+                      <button type="button" onClick={() => removeImage(i)}
+                        className="absolute inset-0 flex items-center justify-center bg-black/50 text-white opacity-0 transition-opacity group-hover:opacity-100">✕</button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {uploading && <p className="text-sm text-ocean-500">이미지 업로드 중...</p>}
             </div>
           </div>
 

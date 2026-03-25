@@ -5,7 +5,26 @@ import {
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from './firebase';
-import type { Product, Category, Order } from './types';
+import type { Product, Category, Order, UserProfile } from './types';
+
+/* ── Users ── */
+export async function createUserProfile(uid: string, data: Omit<UserProfile, 'uid' | 'createdAt'>) {
+  return setDoc(doc(db, 'shop_users', uid), {
+    ...data,
+    uid,
+    createdAt: serverTimestamp(),
+  });
+}
+
+export async function getUserProfile(uid: string): Promise<UserProfile | null> {
+  const d = await getDoc(doc(db, 'shop_users', uid));
+  if (!d.exists()) return null;
+  return { uid: d.id, ...d.data() } as UserProfile;
+}
+
+export async function updateUserProfile(uid: string, data: Partial<UserProfile>) {
+  return updateDoc(doc(db, 'shop_users', uid), data);
+}
 
 /* ── Categories ── */
 export async function getCategories(): Promise<Category[]> {
@@ -28,13 +47,23 @@ export async function deleteCategory(id: string) {
 
 /* ── Products ── */
 export async function getProducts(categorySlug?: string): Promise<Product[]> {
-  const constraints: QueryConstraint[] = [orderBy('sortOrder')];
-  if (categorySlug) {
-    constraints.unshift(where('categorySlug', '==', categorySlug));
+  try {
+    const q = query(collection(db, 'shop_products'), orderBy('sortOrder'));
+    const snap = await getDocs(q);
+    const all = snap.docs.map(d => ({ id: d.id, ...d.data() } as Product));
+    if (categorySlug) {
+      return all.filter(p => p.categorySlug === categorySlug);
+    }
+    return all;
+  } catch {
+    // fallback: sortOrder 인덱스 없을 경우
+    const snap = await getDocs(collection(db, 'shop_products'));
+    const all = snap.docs.map(d => ({ id: d.id, ...d.data() } as Product));
+    if (categorySlug) {
+      return all.filter(p => p.categorySlug === categorySlug);
+    }
+    return all;
   }
-  const q = query(collection(db, 'shop_products'), ...constraints);
-  const snap = await getDocs(q);
-  return snap.docs.map(d => ({ id: d.id, ...d.data() } as Product));
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
@@ -139,6 +168,39 @@ export async function uploadProductImage(file: File, productId: string): Promise
   const storageRef = ref(storage, path);
   await uploadBytes(storageRef, file);
   return getDownloadURL(storageRef);
+}
+
+/* ── Analytics (방문자 추적) ── */
+export async function trackPageView(site: 'web' | 'shop') {
+  const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+  const docId = `${site}_${today}`;
+  const ref = doc(db, 'analytics_daily', docId);
+  try {
+    const snap = await getDoc(ref);
+    if (snap.exists()) {
+      const data = snap.data();
+      await updateDoc(ref, { views: (data.views || 0) + 1 });
+    } else {
+      await setDoc(ref, { site, date: today, views: 1 });
+    }
+  } catch { /* 무시 — 추적 실패가 사용자 경험에 영향 없도록 */ }
+}
+
+export interface DailyStats { date: string; views: number; }
+
+export async function getAnalytics(site: 'web' | 'shop', days = 30): Promise<{ daily: DailyStats[]; total: number; today: number }> {
+  const snap = await getDocs(collection(db, 'analytics_daily'));
+  const all = snap.docs
+    .map(d => ({ id: d.id, ...d.data() } as { id: string; site: string; date: string; views: number }))
+    .filter(d => d.site === site)
+    .sort((a, b) => b.date.localeCompare(a.date));
+
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const todayData = all.find(d => d.date === todayStr);
+  const total = all.reduce((s, d) => s + (d.views || 0), 0);
+  const daily = all.slice(0, days).map(d => ({ date: d.date, views: d.views }));
+
+  return { daily, total, today: todayData?.views || 0 };
 }
 
 /* ── Order Number Generation ── */

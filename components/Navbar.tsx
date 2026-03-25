@@ -1,28 +1,49 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import Image from 'next/image';
+import { useState, useEffect } from 'react';
+import { getCartCount } from '@/lib/cart';
 
 const NAV_ITEMS = [
-  { label: '?�체?�품', href: '/products' },
-  { label: '?�동?�산�?, href: '/products/frozen' },
-  { label: '밀?�트', href: '/products/mealkit' },
-  { label: '?�광굴비', href: '/products/gulbi' },
-  { label: '?�물?�트', href: '/products/gift' },
+  { label: '전체상품', href: '/products' },
+  { label: '냉동어류', href: '/products/frozen-fish' },
+  { label: '어패·갑각류', href: '/products/seafood' },
+  { label: '건어물', href: '/products/dried' },
+  { label: '굴비·선물세트', href: '/products/gift-set' },
   { label: 'B2B 기업', href: '/business' },
 ];
 
-export default function Navbar({ cartCount = 0 }: { cartCount?: number }) {
+export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
+
+  useEffect(() => {
+    setCartCount(getCartCount());
+
+    const handleCartUpdate = () => setCartCount(getCartCount());
+
+    window.addEventListener('storage', handleCartUpdate);
+    window.addEventListener('cart-updated', handleCartUpdate);
+    return () => {
+      window.removeEventListener('storage', handleCartUpdate);
+      window.removeEventListener('cart-updated', handleCartUpdate);
+    };
+  }, []);
 
   return (
     <nav className="fixed top-0 z-50 w-full border-b border-gray-200 bg-white/95 backdrop-blur-md shadow-sm">
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-2 focus:z-[60] focus:rounded-lg focus:bg-ocean-500 focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-white">
+        본문으로 건너뛰기
+      </a>
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 lg:px-8">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-ocean-500 text-sm font-bold text-white">??/div>
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white shadow-sm ring-1 ring-gray-200">
+            <Image src="/images/logo.png" alt="서풍 로고" width={36} height={36} className="h-full w-full object-cover" />
+          </div>
           <div>
-            <span className="text-lg font-bold text-gray-900">?�풍�?/span>
+            <span className="text-lg font-bold text-gray-900">서풍몰</span>
             <span className="ml-1.5 text-[10px] font-medium text-ocean-500">SHOP</span>
           </div>
         </Link>
@@ -42,7 +63,7 @@ export default function Navbar({ cartCount = 0 }: { cartCount?: number }) {
           <Link href="/order-tracking" className="hidden text-sm text-gray-400 hover:text-gray-700 sm:block">주문조회</Link>
           <a href="https://seopung.co.kr/" target="_blank" rel="noopener noreferrer"
             className="hidden rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-medium text-gray-500 transition-colors hover:border-ocean-300 hover:text-ocean-600 sm:block">
-            ?�사?�개
+            회사소개
           </a>
           <Link href="/cart" className="relative rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-ocean-600">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5">
@@ -55,11 +76,11 @@ export default function Navbar({ cartCount = 0 }: { cartCount?: number }) {
             )}
           </Link>
           <Link href="/login" className="hidden rounded-lg bg-ocean-500 px-3.5 py-1.5 text-sm font-medium text-white transition-colors hover:bg-ocean-600 sm:block">
-            로그??
+            로그인
           </Link>
 
           {/* Mobile hamburger */}
-          <button onClick={() => setMobileOpen(!mobileOpen)} className="rounded-lg p-2 text-gray-500 hover:bg-gray-100 md:hidden">
+          <button onClick={() => setMobileOpen(!mobileOpen)} className="rounded-lg p-3 text-gray-500 hover:bg-gray-100 md:hidden">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5">
               {mobileOpen
                 ? <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
@@ -82,9 +103,9 @@ export default function Navbar({ cartCount = 0 }: { cartCount?: number }) {
             ))}
             <hr className="border-gray-100" />
             <Link href="/order-tracking" className="block rounded-lg px-3 py-2.5 text-sm text-gray-500">주문조회</Link>
-            <Link href="/login" className="block rounded-lg px-3 py-2.5 text-sm text-gray-500">로그??/Link>
+            <Link href="/login" className="block rounded-lg px-3 py-2.5 text-sm text-gray-500">로그인</Link>
             <a href="https://seopung.co.kr/" target="_blank" rel="noopener noreferrer"
-              className="block rounded-lg px-3 py-2.5 text-sm text-ocean-500">?�사?�개 ?�페?��? &rarr;</a>
+              className="block rounded-lg px-3 py-2.5 text-sm text-ocean-500">회사소개 홈페이지 &rarr;</a>
           </div>
         </div>
       )}
