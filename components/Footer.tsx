@@ -30,7 +30,7 @@ export default function Footer() {
           <div>
             <h4 className="mb-3 text-sm font-semibold text-gray-800">고객센터</h4>
             <div className="space-y-2 text-sm text-gray-500">
-              <p>전화: 061-XXX-XXXX</p>
+              <p>전화: 061-686-0508</p>
               <p>평일 09:00 ~ 18:00</p>
               <p>점심 12:00 ~ 13:00</p>
             </div>

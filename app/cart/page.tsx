@@ -16,6 +16,7 @@ export default function CartPage() {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
+    document.title = '장바구니 | 서풍몰';
     setCartItems(getCart());
     setLoaded(true);
     getStoreSettings().then(s => setSettings(s as StoreSettings));

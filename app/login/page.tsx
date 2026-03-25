@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useState } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -86,6 +86,7 @@ function LoginForm() {
 }
 
 export default function LoginPage() {
+  useEffect(() => { document.title = '로그인 | 서풍몰'; }, []);
   return (
     <main className="bg-gray-50 min-h-screen font-[family-name:var(--font-pretendard)]">
       <Navbar />

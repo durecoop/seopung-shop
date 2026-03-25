@@ -102,7 +102,12 @@ export default function ShopHome() {
               <Link href="/products/gift-set" className="mt-6 inline-flex items-center gap-2 rounded-xl bg-gold-500 px-6 py-3 font-semibold text-navy-950 hover:bg-gold-400">굴비 보러가기 &rarr;</Link>
             </div>
             <div className="mt-8 flex h-56 w-full items-center justify-center rounded-2xl bg-white/10 md:mt-0 md:h-64 md:w-80">
-              <span className="text-sm text-white/30">굴비 이미지</span>
+              <div className="flex flex-col items-center gap-2 text-white/30">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={0.8} stroke="currentColor" className="h-16 w-16">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0 0 22.5 18.75V5.25A2.25 2.25 0 0 0 20.25 3H3.75A2.25 2.25 0 0 0 1.5 5.25v13.5A2.25 2.25 0 0 0 3.75 21Z" />
+                </svg>
+                <span className="text-xs">영광굴비 선물세트</span>
+              </div>
             </div>
           </div>
         </div>

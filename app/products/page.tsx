@@ -14,6 +14,7 @@ export default function ProductsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    document.title = '전체상품 | 서풍몰';
     Promise.all([getProducts(), getCategories()]).then(([p, c]) => {
       setProducts(p);
       setCategories(c);

@@ -23,6 +23,7 @@ export default function OrderTrackingPage() {
   const [ordersLoading, setOrdersLoading] = useState(false);
 
   useEffect(() => {
+    document.title = '주문 조회 | 서풍몰';
     const unsubscribe = onAuthStateChanged(auth, async (u) => {
       setUser(u);
       setAuthLoading(false);

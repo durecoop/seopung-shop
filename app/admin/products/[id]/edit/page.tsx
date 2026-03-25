@@ -136,7 +136,7 @@ export default function AdminProductEditPage() {
                     {existingImages.map((url, i) => (
                       <div key={i} className="group relative">
                         <div className="h-28 w-28 overflow-hidden rounded-xl border-2 border-gray-200 transition-all group-hover:border-red-400">
-                          <img src={url} alt="" className="h-full w-full object-cover" />
+                          <img src={url} alt="상품 이미지 미리보기" className="h-full w-full object-cover" />
                         </div>
                         <button type="button" onClick={() => { if (confirm('이 이미지를 삭제하시겠습니까?')) removeExisting(i); }}
                           className="absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white shadow-md transition-transform hover:scale-110">
@@ -175,7 +175,7 @@ export default function AdminProductEditPage() {
                   <div className="flex flex-wrap gap-2">
                     {imageUrls.map((url, i) => (
                       <div key={'url-' + i} className="group relative h-20 w-20 overflow-hidden rounded-lg border border-gray-200">
-                        <img src={url} alt="" className="h-full w-full object-cover" />
+                        <img src={url} alt="상품 이미지 미리보기" className="h-full w-full object-cover" />
                         <button type="button" onClick={() => removeUrlImage(i)}
                           className="absolute inset-0 flex items-center justify-center bg-black/50 text-white opacity-0 transition-opacity group-hover:opacity-100">✕</button>
                       </div>
@@ -193,7 +193,7 @@ export default function AdminProductEditPage() {
                 <div className="flex flex-wrap gap-2">
                   {newPreviews.map((src, i) => (
                     <div key={i} className="group relative h-24 w-24 overflow-hidden rounded-lg border border-ocean-300">
-                      <img src={src} alt="" className="h-full w-full object-cover" />
+                      <img src={src} alt="상품 이미지 미리보기" className="h-full w-full object-cover" />
                       <button type="button" onClick={() => removeNew(i)}
                         className="absolute inset-0 flex items-center justify-center bg-black/50 text-white opacity-0 transition-opacity group-hover:opacity-100">✕</button>
                       <span className="absolute bottom-0 left-0 right-0 bg-ocean-500 py-0.5 text-center text-[10px] text-white">NEW</span>

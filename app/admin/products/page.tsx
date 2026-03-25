@@ -82,7 +82,7 @@ export default function AdminProductsPage() {
                   <td className="px-6 py-3">
                     {p.images?.[0] ? (
                       <div className="group relative h-14 w-14 overflow-hidden rounded-lg border border-gray-200">
-                        <img src={p.images[0]} alt="" className="h-full w-full object-cover" />
+                        <img src={p.images[0]} alt="상품 이미지" className="h-full w-full object-cover" />
                         <button onClick={async () => {
                           if (!confirm('이 상품의 이미지를 삭제하시겠습니까?')) return;
                           await updateProduct(p.id, { images: [] });

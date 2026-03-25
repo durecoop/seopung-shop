@@ -138,14 +138,14 @@ export default function AdminProductNewPage() {
                 <div className="flex flex-wrap gap-2">
                   {imageUrls.map((url, i) => (
                     <div key={'url-' + i} className="group relative h-20 w-20 overflow-hidden rounded-lg border border-gray-200">
-                      <img src={url} alt="" className="h-full w-full object-cover" />
+                      <img src={url} alt="상품 이미지 미리보기" className="h-full w-full object-cover" />
                       <button type="button" onClick={() => removeUrlImage(i)}
                         className="absolute inset-0 flex items-center justify-center bg-black/50 text-white opacity-0 transition-opacity group-hover:opacity-100">✕</button>
                     </div>
                   ))}
                   {imagePreviews.map((src, i) => (
                     <div key={'file-' + i} className="group relative h-20 w-20 overflow-hidden rounded-lg border border-gray-200">
-                      <img src={src} alt="" className="h-full w-full object-cover" />
+                      <img src={src} alt="상품 이미지 미리보기" className="h-full w-full object-cover" />
                       <button type="button" onClick={() => removeImage(i)}
                         className="absolute inset-0 flex items-center justify-center bg-black/50 text-white opacity-0 transition-opacity group-hover:opacity-100">✕</button>
                     </div>
