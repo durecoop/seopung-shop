@@ -6,7 +6,7 @@ import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { getCart, type CartItemData } from '@/lib/cart';
-import { generateOrderNumber, createOrder, getStoreSettings, getUserProfile } from '@/lib/db';
+import { generateOrderNumber, createOrder, getStoreSettings, getUserProfile, getAddresses, saveAddress } from '@/lib/db';
 import { formatPrice } from '@/lib/types';
 import type { StoreSettings } from '@/lib/types';
 import { auth } from '@/lib/firebase';
@@ -21,6 +21,8 @@ export default function CheckoutPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [authChecking, setAuthChecking] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [addresses, setAddresses] = useState<any[]>([]);
+  const [saveAddr, setSaveAddr] = useState(false);
 
   const searchAddress = () => {
     if (typeof window === 'undefined') return;
@@ -96,6 +98,8 @@ export default function CheckoutPage() {
             email: prev.email || user.email || '',
           }));
         }
+        const addrs = await getAddresses(user.uid);
+        setAddresses(addrs);
       }
       setAuthChecking(false);
     });
@@ -143,6 +147,18 @@ export default function CheckoutPage() {
         deliveryMemo: form.deliveryMemo,
         depositorName: form.depositorName,
       });
+      if (saveAddr && currentUser) {
+        await saveAddress({
+          userId: currentUser.uid,
+          label: form.address.split(' ').slice(0, 2).join(' '),
+          name: form.name,
+          phone: form.phone,
+          postalCode: form.postalCode,
+          address: form.address,
+          addressDetail: form.addressDetail,
+          isDefault: addresses.length === 0,
+        });
+      }
       router.push(`/checkout/complete?orderNumber=${encodeURIComponent(orderNumber)}&total=${total}`);
     } catch (err) {
       console.error('Order creation failed:', err);
@@ -206,6 +222,31 @@ export default function CheckoutPage() {
               {/* Delivery */}
               <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
                 <h2 className="mb-5 text-lg font-bold text-gray-900">배송 정보</h2>
+                {addresses.length > 0 && (
+                  <div className="mb-4">
+                    <label className="mb-1 block text-sm text-gray-500">저장된 배송지</label>
+                    <select className={inputCls} onChange={(e) => {
+                      const addr = addresses.find((a: any) => a.id === e.target.value);
+                      if (addr) {
+                        setForm(prev => ({
+                          ...prev,
+                          name: addr.name || prev.name,
+                          phone: addr.phone || prev.phone,
+                          postalCode: addr.postalCode || '',
+                          address: addr.address || '',
+                          addressDetail: addr.addressDetail || '',
+                        }));
+                      }
+                    }}>
+                      <option value="">직접 입력</option>
+                      {addresses.map((addr: any) => (
+                        <option key={addr.id} value={addr.id}>
+                          {addr.label || addr.address} ({addr.name})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
                 <div className="space-y-4">
                   <div className="grid gap-4 md:grid-cols-2">
                     <div><label className="mb-1 block text-sm text-gray-500">수령인 *</label><input type="text" required value={form.name} onChange={e => { setForm({...form, name: e.target.value}); if (errors.name) setErrors(prev => { const n = {...prev}; delete n.name; return n; }); }} className={inputCls} placeholder="이름" />{errors.name && <p className="mt-1 text-xs text-red-500">{errors.name}</p>}</div>
@@ -218,6 +259,10 @@ export default function CheckoutPage() {
                   </div>
                   <div><label className="mb-1 block text-sm text-gray-500">주소 *</label><input type="text" required readOnly value={form.address} className={inputCls + ' bg-gray-50'} placeholder="기본 주소" onClick={searchAddress} />{errors.address && <p className="mt-1 text-xs text-red-500">{errors.address}</p>}</div>
                   <div><input type="text" value={form.addressDetail} onChange={e => setForm({...form, addressDetail: e.target.value})} className={inputCls} placeholder="상세 주소" /></div>
+                  <label className="mt-3 flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" checked={saveAddr} onChange={e => setSaveAddr(e.target.checked)} className="h-4 w-4 rounded border-gray-300 text-ocean-500" />
+                    <span className="text-sm text-gray-500">이 배송지를 저장합니다</span>
+                  </label>
                   <div><label className="mb-1 block text-sm text-gray-500">배송 메모</label>
                     <select value={form.deliveryMemo} onChange={e => setForm({...form, deliveryMemo: e.target.value})} className={inputCls}>
                       <option value="">선택해주세요</option>

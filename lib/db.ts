@@ -223,6 +223,30 @@ export async function getAnalytics(site: 'web' | 'shop', days = 30): Promise<{ d
 }
 
 /* ── Order Number Generation ── */
+/* ── Address Book ── */
+export async function getAddresses(userId: string) {
+  const q = query(collection(db, 'shop_addresses'), where('userId', '==', userId), orderBy('isDefault', 'desc'));
+  try {
+    const snap = await getDocs(q);
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  } catch {
+    const snap = await getDocs(collection(db, 'shop_addresses'));
+    return snap.docs.map(d => ({ id: d.id, ...d.data() })).filter((a: any) => a.userId === userId);
+  }
+}
+
+export async function saveAddress(data: Record<string, unknown>) {
+  return addDoc(collection(db, 'shop_addresses'), {
+    ...data,
+    createdAt: serverTimestamp(),
+  });
+}
+
+export async function deleteAddress(id: string) {
+  return deleteDoc(doc(db, 'shop_addresses', id));
+}
+
+/* ── Order Number Generation ── */
 export async function generateOrderNumber(): Promise<string> {
   const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
   const prefix = `SP-${today}`;

@@ -1,20 +1,35 @@
+'use client';
+
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { formatPrice } from '@/lib/types';
 import type { Product } from '@/lib/types';
+import { addToCart } from '@/lib/cart';
 
 export default function ProductCard({ product }: { product: Product }) {
+  const [added, setAdded] = useState(false);
   const discount = product.originalPrice
     ? Math.round((1 - product.price / product.originalPrice) * 100)
     : 0;
 
+  const handleAddCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addToCart(product, 1);
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1500);
+  };
+
+  const href = `/products/${product.categorySlug}/${product.slug}`;
+
   return (
-    <Link href={`/products/${product.categorySlug}/${product.slug}`}
+    <Link href={href}
       className="group block overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:border-ocean-300 hover:shadow-lg">
       {/* Image */}
       <div className="relative aspect-square overflow-hidden bg-gray-50">
         {product.images && product.images[0] ? (
-          <Image src={product.images[0]} alt={product.name} fill sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw" className="object-cover transition-transform duration-500 group-hover:scale-110" />
+          <Image src={product.images[0]} alt={product.name} fill sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw" className="object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
         ) : (
           <div className="flex h-full items-center justify-center">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={0.8} stroke="currentColor" className="h-16 w-16 text-gray-200">
@@ -27,6 +42,16 @@ export default function ProductCard({ product }: { product: Product }) {
           {product.isNew && <span className="rounded-md bg-ocean-500 px-2 py-0.5 text-xs font-bold text-white">NEW</span>}
           {product.tags.includes('인기') && <span className="rounded-md bg-amber-500 px-2 py-0.5 text-xs font-bold text-white">인기</span>}
         </div>
+
+        {/* Add to cart button overlay */}
+        <button onClick={handleAddCart}
+          className={`absolute bottom-3 left-3 right-3 z-10 rounded-lg py-2.5 text-sm font-semibold transition-all duration-300 ${
+            added
+              ? 'translate-y-0 bg-emerald-500 text-white opacity-100'
+              : 'translate-y-2 bg-white/90 text-ocean-600 opacity-0 shadow-lg backdrop-blur-sm group-hover:translate-y-0 group-hover:opacity-100 hover:bg-ocean-500 hover:text-white'
+          }`}>
+          {added ? '담았습니다' : '장바구니 담기'}
+        </button>
       </div>
 
       <div className="p-4">

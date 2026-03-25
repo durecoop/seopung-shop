@@ -136,9 +136,52 @@ export default function ProductDetailPage() {
               </button>
               <Link href="/checkout" className="flex-1 rounded-xl bg-ocean-500 py-3.5 text-center font-semibold text-white hover:bg-ocean-600">바로 구매</Link>
             </div>
-            <div className="mt-10 border-t border-gray-200 pt-6">
-              <h3 className="mb-3 text-sm font-semibold text-gray-700">상품 정보</h3>
-              <pre className="whitespace-pre-wrap text-sm leading-relaxed text-gray-500">{product.detail}</pre>
+            {/* Product Detail Section */}
+            <div className="mt-10 border-t border-gray-200 pt-8">
+              <div className="flex gap-6 border-b border-gray-100 pb-4 mb-6">
+                <button className="text-sm font-semibold text-ocean-600 border-b-2 border-ocean-500 pb-2">상품 상세</button>
+                <span className="text-sm text-gray-300 pb-2">배송/교환/반품</span>
+              </div>
+
+              {/* Detail info table */}
+              {product.detail && (
+                <div className="rounded-xl border border-gray-200 overflow-hidden mb-8">
+                  {product.detail.split('\n').filter(Boolean).map((line, i) => {
+                    const parts = line.split(':');
+                    const hasLabel = parts.length >= 2;
+                    return (
+                      <div key={i} className={`flex text-sm ${i > 0 ? 'border-t border-gray-100' : ''}`}>
+                        {hasLabel ? (
+                          <>
+                            <span className="w-32 shrink-0 bg-gray-50 px-4 py-3 font-medium text-gray-600">{parts[0].trim()}</span>
+                            <span className="flex-1 px-4 py-3 text-gray-500">{parts.slice(1).join(':').trim()}</span>
+                          </>
+                        ) : (
+                          <span className="flex-1 px-4 py-3 text-gray-500">{line}</span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Product description text */}
+              {product.description && (
+                <div className="mb-8">
+                  <p className="text-sm leading-relaxed text-gray-600">{product.description}</p>
+                </div>
+              )}
+
+              {/* Detail images - product images from index 1 onwards */}
+              {product.images && product.images.length > 1 && (
+                <div className="space-y-4">
+                  {product.images.slice(1).map((img, i) => (
+                    <div key={i} className="overflow-hidden rounded-xl border border-gray-200">
+                      <Image src={img} alt={`${product.name} 상세 ${i + 1}`} width={800} height={800} className="w-full h-auto object-contain" loading="lazy" />
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
