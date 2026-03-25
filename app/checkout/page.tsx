@@ -2,12 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { getCart, type CartItemData } from '@/lib/cart';
-import { generateOrderNumber, createOrder, getStoreSettings } from '@/lib/db';
+import { generateOrderNumber, createOrder, getStoreSettings, getUserProfile } from '@/lib/db';
 import { formatPrice } from '@/lib/types';
 import type { StoreSettings } from '@/lib/types';
+import { auth } from '@/lib/firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -16,6 +19,8 @@ export default function CheckoutPage() {
   const [settings, setSettings] = useState<StoreSettings | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [authChecking, setAuthChecking] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const searchAddress = () => {
     if (typeof window === 'undefined') return;
@@ -64,6 +69,37 @@ export default function CheckoutPage() {
   useEffect(() => {
     setCartItems(getCart());
     getStoreSettings().then(s => setSettings(s as StoreSettings));
+
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        setIsLoggedIn(true);
+        try {
+          const profile = await getUserProfile(user.uid);
+          if (profile) {
+            setForm(prev => ({
+              ...prev,
+              name: prev.name || profile.name || user.displayName || '',
+              phone: prev.phone || profile.phone || '',
+              email: prev.email || profile.email || user.email || '',
+            }));
+          } else {
+            setForm(prev => ({
+              ...prev,
+              name: prev.name || user.displayName || '',
+              email: prev.email || user.email || '',
+            }));
+          }
+        } catch {
+          setForm(prev => ({
+            ...prev,
+            name: prev.name || user.displayName || '',
+            email: prev.email || user.email || '',
+          }));
+        }
+      }
+      setAuthChecking(false);
+    });
+    return () => unsubscribe();
   }, []);
 
   const shippingFee = settings ? settings.shippingFee : 3000;
@@ -115,8 +151,40 @@ export default function CheckoutPage() {
 
   const inputCls = "w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-300 focus:border-ocean-400 focus:outline-none focus:ring-1 focus:ring-ocean-400/30";
 
-  if (cartItems.length === 0 && typeof window !== 'undefined') {
-    // Only show empty after client hydration
+  if (authChecking) {
+    return (
+      <main className="bg-gray-50 min-h-screen font-[family-name:var(--font-pretendard)]">
+        <Navbar />
+        <div className="flex items-center justify-center pt-40 pb-20">
+          <div className="text-center">
+            <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-ocean-500" />
+            <p className="text-sm text-gray-500">로딩 중...</p>
+          </div>
+        </div>
+        <Footer />
+      </main>
+    );
+  }
+
+  if (!isLoggedIn) {
+    return (
+      <main className="bg-gray-50 min-h-screen font-[family-name:var(--font-pretendard)]">
+        <Navbar />
+        <div className="mx-auto max-w-md px-4 pt-32 pb-20 text-center">
+          <div className="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="mx-auto mb-4 h-12 w-12 text-gray-300">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+            </svg>
+            <h2 className="text-xl font-bold text-gray-900">로그인이 필요합니다</h2>
+            <p className="mt-2 text-sm text-gray-500">주문하시려면 먼저 로그인해 주세요.</p>
+            <Link href="/login" className="mt-6 inline-block w-full rounded-xl bg-ocean-500 py-3 font-semibold text-white transition-colors hover:bg-ocean-600">
+              로그인 / 회원가입
+            </Link>
+          </div>
+        </div>
+        <Footer />
+      </main>
+    );
   }
 
   return (

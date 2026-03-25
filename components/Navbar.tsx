@@ -2,8 +2,10 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { getCartCount } from '@/lib/cart';
+import { auth } from '@/lib/firebase';
+import { onAuthStateChanged, signOut, type User } from 'firebase/auth';
 
 const NAV_ITEMS = [
   { label: '전체상품', href: '/products' },
@@ -17,19 +19,38 @@ const NAV_ITEMS = [
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
+  const [user, setUser] = useState<User | null>(null);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setCartCount(getCartCount());
 
     const handleCartUpdate = () => setCartCount(getCartCount());
-
     window.addEventListener('storage', handleCartUpdate);
     window.addEventListener('cart-updated', handleCartUpdate);
+
+    const unsubscribe = onAuthStateChanged(auth, (u) => setUser(u));
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
+        setUserMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+
     return () => {
       window.removeEventListener('storage', handleCartUpdate);
       window.removeEventListener('cart-updated', handleCartUpdate);
+      unsubscribe();
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  const handleLogout = async () => {
+    await signOut(auth);
+    setUserMenuOpen(false);
+  };
 
   return (
     <nav className="fixed top-0 z-50 w-full border-b border-gray-200 bg-white/95 backdrop-blur-md shadow-sm">
@@ -75,9 +96,33 @@ export default function Navbar() {
               </span>
             )}
           </Link>
-          <Link href="/login" className="hidden rounded-lg bg-ocean-500 px-3.5 py-1.5 text-sm font-medium text-white transition-colors hover:bg-ocean-600 sm:block">
-            로그인
-          </Link>
+          {user ? (
+            <div className="relative hidden sm:block" ref={userMenuRef}>
+              <button onClick={() => setUserMenuOpen(!userMenuOpen)}
+                className="flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:border-ocean-300 hover:text-ocean-600">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                </svg>
+                {user.displayName || user.email?.split('@')[0] || '회원'}
+              </button>
+              {userMenuOpen && (
+                <div className="absolute right-0 top-full mt-2 w-48 rounded-xl border border-gray-200 bg-white py-2 shadow-lg">
+                  <div className="border-b border-gray-100 px-4 py-2">
+                    <p className="text-xs text-gray-400">로그인 계정</p>
+                    <p className="truncate text-sm font-medium text-gray-700">{user.email}</p>
+                  </div>
+                  <Link href="/order-tracking" onClick={() => setUserMenuOpen(false)}
+                    className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-ocean-600">주문조회</Link>
+                  <button onClick={handleLogout}
+                    className="block w-full px-4 py-2 text-left text-sm text-gray-600 hover:bg-gray-50 hover:text-red-500">로그아웃</button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <Link href="/login" className="hidden rounded-lg bg-ocean-500 px-3.5 py-1.5 text-sm font-medium text-white transition-colors hover:bg-ocean-600 sm:block">
+              로그인
+            </Link>
+          )}
 
           {/* Mobile hamburger */}
           <button onClick={() => setMobileOpen(!mobileOpen)} className="rounded-lg p-3 text-gray-500 hover:bg-gray-100 md:hidden">
@@ -102,8 +147,16 @@ export default function Navbar() {
               </Link>
             ))}
             <hr className="border-gray-100" />
-            <Link href="/order-tracking" className="block rounded-lg px-3 py-2.5 text-sm text-gray-500">주문조회</Link>
-            <Link href="/login" className="block rounded-lg px-3 py-2.5 text-sm text-gray-500">로그인</Link>
+            <Link href="/order-tracking" onClick={() => setMobileOpen(false)} className="block rounded-lg px-3 py-2.5 text-sm text-gray-500">주문조회</Link>
+            {user ? (
+              <>
+                <div className="px-3 py-2 text-xs text-gray-400">{user.displayName || user.email}</div>
+                <button onClick={() => { handleLogout(); setMobileOpen(false); }}
+                  className="block w-full rounded-lg px-3 py-2.5 text-left text-sm text-red-500">로그아웃</button>
+              </>
+            ) : (
+              <Link href="/login" onClick={() => setMobileOpen(false)} className="block rounded-lg px-3 py-2.5 text-sm text-gray-500">로그인</Link>
+            )}
             <a href="https://seopung.co.kr/" target="_blank" rel="noopener noreferrer"
               className="block rounded-lg px-3 py-2.5 text-sm text-ocean-500">회사소개 홈페이지 &rarr;</a>
           </div>
