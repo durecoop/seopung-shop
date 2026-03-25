@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { addQuote } from '@/lib/db';
@@ -68,22 +67,20 @@ export default function BusinessPage() {
           ))}
         </div>
 
-        {/* Partners with logos */}
+        {/* Partners */}
         <div className="mb-16">
           <p className="mb-6 text-center text-sm font-semibold uppercase tracking-widest text-gray-400">주요 납품 파트너사</p>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
             {[
-              { name: '풀무원', logo: 'https://dureimg.ecoop.or.kr:9091/Delsys/DLOG/webAdmin/shop/IDContent/Upload/seo2(2).jpg' },
-              { name: 'CJ프레시웨이', logo: 'https://dureimg.ecoop.or.kr:9091/Delsys/DLOG/webAdmin/shop/IDContent/Upload/seo4(2).jpg' },
-              { name: '두레생협', logo: '/images/logo.png' },
-              { name: '홈플러스', logo: 'https://dureimg.ecoop.or.kr:9091/Delsys/DLOG/webAdmin/shop/IDContent/Upload/seo2(2).jpg' },
-              { name: '쿠팡', logo: 'https://dureimg.ecoop.or.kr:9091/Delsys/DLOG/webAdmin/shop/IDContent/Upload/seo4(2).jpg' },
+              { name: '풀무원', sub: 'Pulmuone', color: 'text-emerald-600' },
+              { name: 'CJ프레시웨이', sub: 'CJ Freshway', color: 'text-orange-500' },
+              { name: '두레생협', sub: 'Dure Coop', color: 'text-green-600' },
+              { name: '홈플러스', sub: 'Homeplus', color: 'text-red-500' },
+              { name: '쿠팡', sub: 'Coupang', color: 'text-amber-500' },
             ].map((partner) => (
-              <div key={partner.name} className="flex flex-col items-center gap-3 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition-all hover:border-ocean-300 hover:shadow-md">
-                <div className="relative h-16 w-full overflow-hidden rounded-lg">
-                  <Image src={partner.logo} alt={partner.name} fill className="object-contain" sizes="150px" />
-                </div>
-                <span className="text-sm font-semibold text-gray-700">{partner.name}</span>
+              <div key={partner.name} className="flex flex-col items-center justify-center gap-1.5 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all hover:border-ocean-300 hover:shadow-md">
+                <span className={`font-[family-name:var(--font-montserrat)] text-[10px] font-semibold uppercase tracking-wider ${partner.color}`}>{partner.sub}</span>
+                <span className="text-base font-bold text-gray-800">{partner.name}</span>
               </div>
             ))}
           </div>
