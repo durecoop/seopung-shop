@@ -4,11 +4,11 @@ import Link from 'next/link';
 import { useState } from 'react';
 
 const NAV_ITEMS = [
-  { label: '전체상품', href: '/products' },
-  { label: '냉동수산물', href: '/products/frozen' },
-  { label: '밀키트', href: '/products/mealkit' },
-  { label: '영광굴비', href: '/products/gulbi' },
-  { label: '선물세트', href: '/products/gift' },
+  { label: '?�체?�품', href: '/products' },
+  { label: '?�동?�산�?, href: '/products/frozen' },
+  { label: '밀?�트', href: '/products/mealkit' },
+  { label: '?�광굴비', href: '/products/gulbi' },
+  { label: '?�물?�트', href: '/products/gift' },
   { label: 'B2B 기업', href: '/business' },
 ];
 
@@ -20,9 +20,9 @@ export default function Navbar({ cartCount = 0 }: { cartCount?: number }) {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 lg:px-8">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-ocean-500 text-sm font-bold text-white">서</div>
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-ocean-500 text-sm font-bold text-white">??/div>
           <div>
-            <span className="text-lg font-bold text-gray-900">서풍몰</span>
+            <span className="text-lg font-bold text-gray-900">?�풍�?/span>
             <span className="ml-1.5 text-[10px] font-medium text-ocean-500">SHOP</span>
           </div>
         </Link>
@@ -40,9 +40,9 @@ export default function Navbar({ cartCount = 0 }: { cartCount?: number }) {
         {/* Right */}
         <div className="flex items-center gap-3">
           <Link href="/order-tracking" className="hidden text-sm text-gray-400 hover:text-gray-700 sm:block">주문조회</Link>
-          <a href="https://durecoop.github.io/seopung-web/" target="_blank" rel="noopener noreferrer"
+          <a href="https://seopung.co.kr/" target="_blank" rel="noopener noreferrer"
             className="hidden rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-medium text-gray-500 transition-colors hover:border-ocean-300 hover:text-ocean-600 sm:block">
-            회사소개
+            ?�사?�개
           </a>
           <Link href="/cart" className="relative rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-ocean-600">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5">
@@ -55,7 +55,7 @@ export default function Navbar({ cartCount = 0 }: { cartCount?: number }) {
             )}
           </Link>
           <Link href="/login" className="hidden rounded-lg bg-ocean-500 px-3.5 py-1.5 text-sm font-medium text-white transition-colors hover:bg-ocean-600 sm:block">
-            로그인
+            로그??
           </Link>
 
           {/* Mobile hamburger */}
@@ -82,9 +82,9 @@ export default function Navbar({ cartCount = 0 }: { cartCount?: number }) {
             ))}
             <hr className="border-gray-100" />
             <Link href="/order-tracking" className="block rounded-lg px-3 py-2.5 text-sm text-gray-500">주문조회</Link>
-            <Link href="/login" className="block rounded-lg px-3 py-2.5 text-sm text-gray-500">로그인</Link>
-            <a href="https://durecoop.github.io/seopung-web/" target="_blank" rel="noopener noreferrer"
-              className="block rounded-lg px-3 py-2.5 text-sm text-ocean-500">회사소개 홈페이지 &rarr;</a>
+            <Link href="/login" className="block rounded-lg px-3 py-2.5 text-sm text-gray-500">로그??/Link>
+            <a href="https://seopung.co.kr/" target="_blank" rel="noopener noreferrer"
+              className="block rounded-lg px-3 py-2.5 text-sm text-ocean-500">?�사?�개 ?�페?��? &rarr;</a>
           </div>
         </div>
       )}

@@ -78,7 +78,7 @@ export default function BusinessPage() {
         </div>
 
         <div className="mt-10 text-center">
-          <a href="https://durecoop.github.io/seopung-web/" target="_blank" rel="noopener noreferrer" className="text-sm text-ocean-500 hover:text-ocean-600">회사소개 홈페이지에서 설비·인증 정보 보기 &rarr;</a>
+          <a href="https://seopung.co.kr/" target="_blank" rel="noopener noreferrer" className="text-sm text-ocean-500 hover:text-ocean-600">회사소개 홈페이지에서 설비·인증 정보 보기 &rarr;</a>
         </div>
       </div>
       <Footer />

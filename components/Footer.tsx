@@ -37,7 +37,7 @@ export default function Footer() {
               <p>사업자번호: 417-81-41979</p>
               <p>전라남도 여수시 석교로 121</p>
             </div>
-            <a href="https://durecoop.github.io/seopung-web/" target="_blank" rel="noopener noreferrer"
+            <a href="https://seopung.co.kr/" target="_blank" rel="noopener noreferrer"
               className="mt-3 inline-block text-xs text-ocean-500 hover:text-ocean-600">
               회사소개 홈페이지 &rarr;
             </a>
