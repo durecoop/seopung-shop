@@ -119,9 +119,11 @@ export default function CheckoutPage() {
     setSubmitting(true);
     try {
       const orderNumber = await generateOrderNumber();
+      const currentUser = auth.currentUser;
       await createOrder({
         orderNumber,
         status: 'pending_payment',
+        userId: currentUser?.uid || '',
         guestName: form.name,
         guestPhone: form.phone,
         guestEmail: form.email,

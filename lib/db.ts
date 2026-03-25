@@ -106,6 +106,25 @@ export async function getOrders(status?: string): Promise<Order[]> {
   return snap.docs.map(d => ({ id: d.id, ...d.data() } as Order));
 }
 
+export async function getOrdersByUserId(userId: string): Promise<Order[]> {
+  try {
+    const q = query(collection(db, 'shop_orders'), where('userId', '==', userId), orderBy('createdAt', 'desc'));
+    const snap = await getDocs(q);
+    return snap.docs.map(d => ({ id: d.id, ...d.data() } as Order));
+  } catch {
+    // fallback: index 미생성 시 클라이언트 필터링
+    const snap = await getDocs(collection(db, 'shop_orders'));
+    return snap.docs
+      .map(d => ({ id: d.id, ...d.data() } as Order))
+      .filter(o => o.userId === userId)
+      .sort((a, b) => {
+        const ta = a.createdAt as any;
+        const tb = b.createdAt as any;
+        return (tb?.seconds || 0) - (ta?.seconds || 0);
+      });
+  }
+}
+
 export async function getOrderByNumber(orderNumber: string): Promise<Order | null> {
   const q = query(collection(db, 'shop_orders'), where('orderNumber', '==', orderNumber));
   const snap = await getDocs(q);

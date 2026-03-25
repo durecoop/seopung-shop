@@ -54,6 +54,7 @@ export interface Order {
   id: string;
   orderNumber: string;
   status: 'pending_payment' | 'payment_confirmed' | 'preparing' | 'shipped' | 'delivered' | 'cancelled';
+  userId?: string;
   guestName: string;
   guestPhone: string;
   guestEmail: string;
