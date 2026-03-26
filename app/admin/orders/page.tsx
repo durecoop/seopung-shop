@@ -22,6 +22,64 @@ export default function AdminOrdersPage() {
   const [page, setPage] = useState(1);
   const ITEMS_PER_PAGE = 20;
 
+  const formatDateFull = (val: unknown): string => {
+    if (!val) return '';
+    if (typeof val === 'string') return val.split('T')[0];
+    if (val && typeof val === 'object' && 'toDate' in val) {
+      return (val as { toDate: () => Date }).toDate().toISOString().split('T')[0];
+    }
+    if (val && typeof val === 'object' && 'seconds' in val) {
+      return new Date((val as { seconds: number }).seconds * 1000).toISOString().split('T')[0];
+    }
+    return '';
+  };
+
+  const downloadExcel = () => {
+    if (orders.length === 0) { alert('다운로드할 주문이 없습니다.'); return; }
+
+    const BOM = '\uFEFF';
+    const headers = ['주문번호', '주문일자', '상태', '수령인', '연락처', '우편번호', '주소', '상세주소', '배송메모', '상품명', '수량', '금액', '배송비', '총결제금액', '입금자명', '택배사', '운송장번호'];
+
+    const rows = orders.map(o => {
+      const status = ORDER_STATUS_LABELS[o.status]?.label || o.status;
+      const productNames = o.items?.map(i => i.productName).join(' / ') || '';
+      const totalQty = o.items?.reduce((s, i) => s + i.quantity, 0) || 0;
+      return [
+        o.orderNumber,
+        formatDateFull(o.createdAt),
+        status,
+        o.recipientName,
+        o.recipientPhone,
+        o.postalCode,
+        o.address,
+        o.addressDetail || '',
+        o.deliveryMemo || '',
+        productNames,
+        totalQty,
+        formatPrice(o.totalAmount - (o.shippingFee || 0)),
+        formatPrice(o.shippingFee || 0),
+        formatPrice(o.totalAmount),
+        o.depositorName || '',
+        o.trackingCarrier || '',
+        o.trackingNumber || '',
+      ];
+    });
+
+    const csv = BOM + [headers, ...rows].map(row =>
+      row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')
+    ).join('\n');
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    const statusLabel = tab === 'all' ? '전체' : (TABS.find(t => t.key === tab)?.label || tab);
+    a.href = url;
+    a.download = `서풍몰_주문목록_${statusLabel}_${today}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const fetchOrders = useCallback(async () => {
     setLoading(true);
     try {
@@ -54,7 +112,16 @@ export default function AdminOrdersPage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-bold text-gray-900">주문 관리</h1>
+      <div className="mb-6 flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-gray-900">주문 관리</h1>
+        <button onClick={downloadExcel} disabled={loading || orders.length === 0}
+          className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-600 transition-all hover:border-emerald-300 hover:text-emerald-600 disabled:opacity-40 disabled:cursor-not-allowed">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+          </svg>
+          엑셀 다운로드 ({orders.length}건)
+        </button>
+      </div>
 
       {/* Tabs */}
       <div className="mb-6 flex flex-wrap gap-2">
