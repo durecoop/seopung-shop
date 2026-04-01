@@ -166,14 +166,9 @@ export default function ShopHome() {
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="h-4 w-4 transition-transform group-hover:translate-x-1"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
               </Link>
             </div>
-            <div className="flex h-64 w-full items-center justify-center rounded-3xl border border-gold-300/30 bg-white shadow-sm md:h-72 md:w-80">
-              <div className="text-center">
-                <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-2xl bg-gold-500/10">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1} className="h-8 w-8 text-gold-500"><path strokeLinecap="round" strokeLinejoin="round" d="M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 1 0 9.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1 1 14.625 7.5H12m0 0V21m-8.625-9.75h18c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125h-18c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" /></svg>
-                </div>
-                <p className="text-base font-medium text-gray-400">영광굴비 선물세트</p>
-                <p className="mt-1 text-sm text-gray-300">이미지 준비중</p>
-              </div>
+            <div className="relative h-64 w-full overflow-hidden rounded-3xl border border-gold-300/30 shadow-sm md:h-72 md:w-80">
+              <Image src="/images/stock/gulbi-gift.jpg" alt="영광굴비 선물세트" fill className="object-cover" sizes="(max-width: 768px) 100vw, 320px" />
+              <div className="absolute inset-0 bg-gradient-to-t from-gold-500/20 to-transparent" />
             </div>
           </div>
         </div>
