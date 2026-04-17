@@ -26,6 +26,8 @@ export interface Product {
   detail: string;
   price: number;
   originalPrice?: number;
+  coupangPrice?: number;
+  coupangUrl?: string;
   unit: string;
   weight: string;
   stock: number;

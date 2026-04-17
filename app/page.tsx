@@ -47,43 +47,49 @@ export default function ShopHome() {
 
         <div className="relative z-10 mx-auto max-w-7xl px-6 py-16 lg:px-8 lg:py-20">
           <div className="max-w-2xl">
-            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-coral-200 bg-coral-50 px-4 py-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-coral-500 animate-pulse" />
-              <span className="font-[family-name:var(--font-montserrat)] text-sm font-semibold tracking-wider text-coral-500">PREMIUM SEAFOOD</span>
+            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-coral-200 bg-coral-50 px-4 py-2">
+              <span className="h-2 w-2 rounded-full bg-coral-500 animate-pulse" />
+              <span className="font-[family-name:var(--font-montserrat)] text-base font-semibold tracking-wider text-coral-500">PREMIUM SEAFOOD</span>
             </div>
-            <h1 className="text-5xl font-bold leading-tight text-gray-900 md:text-6xl lg:text-7xl">
+            <h1 className="text-5xl font-bold leading-[1.1] text-gray-900 sm:text-6xl md:text-7xl lg:text-[5.5rem]">
               지속가능한 바다의 맛,<br /><span className="text-ocean-500">서풍몰</span>
             </h1>
-            <p className="mt-5 max-w-lg text-xl leading-relaxed text-gray-500">
-              HACCP·ASC·MSC 인증 프리미엄 수산물을<br className="hidden sm:block" />산지에서 식탁까지 직송합니다.
+            <p className="mt-6 max-w-lg text-xl leading-relaxed text-gray-700 md:text-2xl">
+              <span className="font-bold text-gray-900">HACCP · ASC · MSC 인증</span> 프리미엄 수산물을<br className="hidden sm:block" />산지에서 식탁까지 직송합니다.
             </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link href="/products" className="group inline-flex items-center justify-center gap-2 rounded-xl bg-ocean-500 px-8 py-4 text-lg font-semibold text-white shadow-lg shadow-ocean-500/20 transition-all hover:bg-ocean-600 hover:shadow-ocean-500/30">
+            <div className="mt-5 inline-flex items-center gap-2 rounded-xl bg-ocean-600 px-5 py-3 text-white shadow-md">
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+              </svg>
+              <span className="text-base font-bold md:text-lg">쿠팡 최저가 대비 최대 <span className="text-gold-300">20% 저렴</span></span>
+            </div>
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+              <Link href="/products" className="group inline-flex items-center justify-center gap-2 rounded-xl bg-ocean-500 px-8 py-4 text-xl font-bold text-white shadow-lg shadow-ocean-500/20 transition-all hover:bg-ocean-600 hover:shadow-ocean-500/30">
                 전체상품 보기
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="h-5 w-5 transition-transform group-hover:translate-x-1"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
               </Link>
-              <Link href="/products/gift-set" className="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-300 px-8 py-4 text-lg font-semibold text-gray-700 transition-all hover:border-gold-500 hover:text-gold-500">
+              <Link href="/products/gift-set" className="inline-flex items-center justify-center gap-2 rounded-xl border-2 border-gray-300 px-8 py-4 text-xl font-bold text-gray-700 transition-all hover:border-gold-500 hover:text-gold-500">
                 영광굴비 선물세트
               </Link>
             </div>
           </div>
 
           {/* Trust badges */}
-          <div className="mt-14 flex flex-wrap gap-6 border-t border-gray-100 pt-8">
+          <div className="mt-14 grid gap-4 border-t border-gray-100 pt-8 sm:grid-cols-2 lg:grid-cols-4">
             {[
               { label: 'HACCP 인증', sub: '식품안전관리' },
-              { label: 'ASC·MSC', sub: '국제 수산 인증' },
+              { label: 'ASC·MSC 인증', sub: '국제 수산 인증' },
               { label: '산지 직송', sub: '여수 당일 발송' },
               { label: '5만원 이상', sub: '무료 배송' },
             ].map(item => (
-              <div key={item.label} className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-fresh-50 ring-1 ring-fresh-200">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5 text-fresh-600">
+              <div key={item.label} className="flex items-center gap-3 rounded-xl border border-gray-100 bg-white/70 px-4 py-3 shadow-sm">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-fresh-50 ring-1 ring-fresh-200">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" className="h-6 w-6 text-fresh-600">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
                   </svg>
                 </div>
                 <div>
-                  <p className="text-base font-semibold text-gray-800">{item.label}</p>
+                  <p className="text-lg font-bold text-gray-900">{item.label}</p>
                   <p className="text-sm text-gray-500">{item.sub}</p>
                 </div>
               </div>
@@ -96,8 +102,8 @@ export default function ShopHome() {
       <section className="bg-warm-50 py-24">
         <div className="mx-auto max-w-7xl px-4 lg:px-8">
           <div className="mb-12 text-center">
-            <p className="mb-2 font-[family-name:var(--font-montserrat)] text-sm font-semibold uppercase tracking-[0.3em] text-ocean-500">Categories</p>
-            <h2 className="text-4xl font-bold text-gray-900">카테고리</h2>
+            <p className="mb-2 font-[family-name:var(--font-montserrat)] text-base font-semibold uppercase tracking-[0.3em] text-ocean-500">Categories</p>
+            <h2 className="text-4xl font-bold text-gray-900 md:text-5xl">카테고리</h2>
           </div>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
             {categories.map((cat, idx) => {
@@ -115,8 +121,8 @@ export default function ShopHome() {
                 <div className={`mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl ${colorClass} group-hover:text-white group-hover:shadow-lg transition-all duration-500`}>
                   {CATEGORY_ICONS[cat.slug] || DEFAULT_ICON}
                 </div>
-                <h3 className="text-base font-bold text-gray-800 group-hover:text-ocean-600">{cat.name}</h3>
-                <p className="mt-1 text-sm text-gray-500">{cat.description || '상품 보기'}</p>
+                <h3 className="text-lg font-bold text-gray-900 group-hover:text-ocean-600 md:text-xl">{cat.name}</h3>
+                <p className="mt-1 text-sm text-gray-500 md:text-base">{cat.description || '상품 보기'}</p>
               </Link>
               );
             })}
@@ -130,8 +136,8 @@ export default function ShopHome() {
           <div className="mx-auto max-w-7xl px-4 lg:px-8">
             <div className="mb-12 flex items-end justify-between">
               <div>
-                <p className="mb-2 font-[family-name:var(--font-montserrat)] text-sm font-semibold uppercase tracking-[0.3em] text-coral-500">Best Sellers</p>
-                <h2 className="text-4xl font-bold text-gray-900">인기 상품</h2>
+                <p className="mb-2 font-[family-name:var(--font-montserrat)] text-base font-semibold uppercase tracking-[0.3em] text-coral-500">Best Sellers</p>
+                <h2 className="text-4xl font-bold text-gray-900 md:text-5xl">인기 상품</h2>
               </div>
               <Link href="/products" className="hidden items-center gap-1 text-base font-medium text-ocean-500 transition-colors hover:text-ocean-600 sm:flex">
                 전체보기
@@ -154,10 +160,10 @@ export default function ShopHome() {
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="h-3.5 w-3.5"><path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" /></svg>
                 PREMIUM GIFT SET
               </span>
-              <h2 className="mt-6 text-4xl font-bold leading-tight text-gray-900 md:text-5xl">
+              <h2 className="mt-6 text-4xl font-bold leading-tight text-gray-900 sm:text-5xl md:text-6xl">
                 전통 장인이 만드는<br /><span className="text-gold-500">영광굴비 선물세트</span>
               </h2>
-              <p className="mt-4 max-w-md text-lg leading-relaxed text-gray-500">
+              <p className="mt-5 max-w-md text-xl leading-relaxed text-gray-700 md:text-2xl">
                 여수 직송 참조기를 전통 아가미 섭간으로 정성껏 숙성합니다.
                 특별한 날, 소중한 분께 정성을 전하세요.
               </p>
@@ -180,8 +186,8 @@ export default function ShopHome() {
           <div className="mx-auto max-w-7xl px-4 lg:px-8">
             <div className="mb-12 flex items-end justify-between">
               <div>
-                <p className="mb-2 font-[family-name:var(--font-montserrat)] text-sm font-semibold uppercase tracking-[0.3em] text-fresh-500">New Arrivals</p>
-                <h2 className="text-4xl font-bold text-gray-900">신상품</h2>
+                <p className="mb-2 font-[family-name:var(--font-montserrat)] text-base font-semibold uppercase tracking-[0.3em] text-fresh-500">New Arrivals</p>
+                <h2 className="text-4xl font-bold text-gray-900 md:text-5xl">신상품</h2>
               </div>
               <Link href="/products" className="hidden items-center gap-1 text-base font-medium text-ocean-500 transition-colors hover:text-ocean-600 sm:flex">
                 전체보기
@@ -210,8 +216,8 @@ export default function ShopHome() {
                   {item.icon}
                 </div>
                 <div>
-                  <h4 className="text-base font-bold text-gray-800">{item.title}</h4>
-                  <p className="mt-0.5 text-sm text-gray-500">{item.desc}</p>
+                  <h4 className="text-lg font-bold text-gray-900">{item.title}</h4>
+                  <p className="mt-0.5 text-base text-gray-500">{item.desc}</p>
                 </div>
               </div>
             ))}
@@ -222,11 +228,11 @@ export default function ShopHome() {
       {/* ── CTA Banner ── */}
       <section className="border-t border-gray-100 bg-gradient-to-br from-ocean-50 to-warm-50 py-24">
         <div className="mx-auto max-w-4xl px-6 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 md:text-4xl">B2B 대량 구매 · OEM 납품 문의</h2>
-          <p className="mt-3 text-lg text-gray-500">대형마트, 외식 프랜차이즈, 밀키트 브랜드 등 다양한 파트너와 함께합니다.</p>
+          <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl md:text-5xl">B2B 대량 구매 · OEM 납품 문의</h2>
+          <p className="mt-4 text-lg leading-relaxed text-gray-600 md:text-xl">대형마트, 외식 프랜차이즈, 밀키트 브랜드 등 다양한 파트너와 함께합니다.</p>
           <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-            <Link href="/business" className="inline-flex items-center gap-2 rounded-xl bg-ocean-500 px-8 py-3.5 font-semibold text-white shadow-lg shadow-ocean-500/20 transition-all hover:bg-ocean-600">기업 거래 문의</Link>
-            <a href="https://seopung.co.kr" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-xl border border-gray-300 px-8 py-3.5 font-semibold text-gray-600 transition-all hover:border-ocean-400 hover:text-ocean-600">회사소개 홈페이지</a>
+            <Link href="/business" className="inline-flex items-center gap-2 rounded-xl bg-ocean-500 px-8 py-4 text-lg font-bold text-white shadow-lg shadow-ocean-500/20 transition-all hover:bg-ocean-600">OEM 문의하기</Link>
+            <a href="https://seopung.co.kr" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-xl border-2 border-gray-300 px-8 py-4 text-lg font-bold text-gray-700 transition-all hover:border-ocean-400 hover:text-ocean-600">회사소개 홈페이지</a>
           </div>
         </div>
       </section>

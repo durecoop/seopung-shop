@@ -12,7 +12,7 @@ export default function AdminProductEditPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [form, setForm] = useState({ name: '', categorySlug: '', price: '', originalPrice: '', weight: '', unit: 'pack', stock: '', description: '', detail: '', tags: '', isFeatured: false, isNew: false });
+  const [form, setForm] = useState({ name: '', categorySlug: '', price: '', originalPrice: '', coupangPrice: '', coupangUrl: '', weight: '', unit: 'pack', stock: '', description: '', detail: '', tags: '', isFeatured: false, isNew: false });
   const [existingImages, setExistingImages] = useState<string[]>([]);
   const [newFiles, setNewFiles] = useState<File[]>([]);
   const [newPreviews, setNewPreviews] = useState<string[]>([]);
@@ -26,7 +26,10 @@ export default function AdminProductEditPage() {
       if (p) {
         setForm({
           name: p.name, categorySlug: p.categorySlug, price: String(p.price),
-          originalPrice: p.originalPrice ? String(p.originalPrice) : '', weight: p.weight,
+          originalPrice: p.originalPrice ? String(p.originalPrice) : '',
+          coupangPrice: p.coupangPrice ? String(p.coupangPrice) : '',
+          coupangUrl: p.coupangUrl || '',
+          weight: p.weight,
           unit: p.unit || 'pack', stock: String(p.stock), description: p.description, detail: p.detail,
           tags: p.tags?.join(', ') || '', isFeatured: p.isFeatured, isNew: p.isNew,
         });
@@ -62,7 +65,13 @@ export default function AdminProductEditPage() {
     setImageUrls(prev => prev.filter((_, i) => i !== idx));
   };
 
-  const inputCls = "w-full rounded-lg border border-gray-200 px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-300 focus:border-ocean-400 focus:outline-none";
+  const inputCls = "w-full rounded-lg border border-gray-300 px-4 py-3 text-base text-gray-900 placeholder:text-gray-300 focus:border-ocean-500 focus:outline-none focus:ring-2 focus:ring-ocean-400/40";
+  const labelCls = "mb-1.5 block text-sm font-semibold text-gray-700";
+
+  const priceNum = Number(form.price) || 0;
+  const coupangNum = Number(form.coupangPrice) || 0;
+  const coupangSave = coupangNum > priceNum && priceNum > 0 ? coupangNum - priceNum : 0;
+  const coupangSavePct = coupangNum > priceNum && priceNum > 0 ? Math.round((1 - priceNum / coupangNum) * 100) : 0;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,6 +95,8 @@ export default function AdminProductEditPage() {
     await updateProduct(id, {
       name: form.name, categorySlug: form.categorySlug, price: Number(form.price),
       originalPrice: form.originalPrice ? Number(form.originalPrice) : undefined,
+      coupangPrice: form.coupangPrice ? Number(form.coupangPrice) : undefined,
+      coupangUrl: form.coupangUrl || undefined,
       weight: form.weight, unit: form.unit, stock: Number(form.stock), description: form.description,
       detail: form.detail, tags: form.tags.split(',').map(t => t.trim()).filter(Boolean),
       isFeatured: form.isFeatured, isNew: form.isNew, images: uploadedUrls,
@@ -206,11 +217,42 @@ export default function AdminProductEditPage() {
           </div>
 
           <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-            <h2 className="mb-4 text-lg font-semibold text-gray-800">가격·재고</h2>
+            <h2 className="mb-4 text-lg font-bold text-gray-900">가격 · 재고</h2>
             <div className="grid gap-4 sm:grid-cols-3">
-              <div><label className="mb-1 block text-sm text-gray-500">판매가</label><input type="number" value={form.price} onChange={e => setForm({...form, price: e.target.value})} className={inputCls} /></div>
-              <div><label className="mb-1 block text-sm text-gray-500">할인 전 가격</label><input type="number" value={form.originalPrice} onChange={e => setForm({...form, originalPrice: e.target.value})} className={inputCls} /></div>
-              <div><label className="mb-1 block text-sm text-gray-500">재고</label><input type="number" value={form.stock} onChange={e => setForm({...form, stock: e.target.value})} className={inputCls} /></div>
+              <div><label className={labelCls}>판매가 (원)</label><input type="number" value={form.price} onChange={e => setForm({...form, price: e.target.value})} className={inputCls} /></div>
+              <div><label className={labelCls}>할인 전 가격</label><input type="number" value={form.originalPrice} onChange={e => setForm({...form, originalPrice: e.target.value})} className={inputCls} /></div>
+              <div><label className={labelCls}>재고</label><input type="number" value={form.stock} onChange={e => setForm({...form, stock: e.target.value})} className={inputCls} /></div>
+            </div>
+
+            <div className="mt-6 rounded-xl border-2 border-ocean-200 bg-ocean-50/50 p-5">
+              <div className="mb-3 flex items-center gap-2">
+                <span className="rounded-md bg-ocean-600 px-2 py-0.5 text-xs font-bold text-white">쿠팡 매칭</span>
+                <h3 className="text-base font-bold text-gray-900">쿠팡 가격 비교</h3>
+              </div>
+              <p className="mb-4 text-sm text-gray-600">쿠팡에서 같은 상품의 판매 가격을 입력하면, 상품 카드에 자동으로 &ldquo;쿠팡보다 N% 저렴&rdquo; 뱃지가 노출됩니다.</p>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div><label className={labelCls}>쿠팡 판매가 (원)</label>
+                  <input type="number" value={form.coupangPrice} onChange={e => setForm({...form, coupangPrice: e.target.value})} className={inputCls} placeholder="예: 19900" />
+                </div>
+                <div><label className={labelCls}>쿠팡 상품 URL (선택)</label>
+                  <input type="url" value={form.coupangUrl} onChange={e => setForm({...form, coupangUrl: e.target.value})} className={inputCls} placeholder="https://www.coupang.com/vp/..." />
+                </div>
+              </div>
+              {coupangSave > 0 && (
+                <div className="mt-4 flex items-center justify-between rounded-lg bg-white p-4 ring-1 ring-ocean-200">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-wider text-ocean-600">자동 계산 결과</p>
+                    <p className="mt-0.5 text-sm text-gray-700">상품 카드에 표시될 절약 금액</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-montserrat text-2xl font-bold text-ocean-600">{coupangSave.toLocaleString()}원</p>
+                    <p className="text-sm font-bold text-coral-500">쿠팡보다 {coupangSavePct}% 저렴</p>
+                  </div>
+                </div>
+              )}
+              {coupangNum > 0 && coupangNum <= priceNum && (
+                <p className="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-700">⚠ 쿠팡가가 판매가보다 낮거나 같습니다. 가격을 재확인해주세요.</p>
+              )}
             </div>
           </div>
         </div>
