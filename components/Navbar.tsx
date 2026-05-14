@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { getCartCount } from '@/lib/cart';
 import { auth } from '@/lib/firebase';
 import { onAuthStateChanged, signOut, type User } from 'firebase/auth';
@@ -13,7 +13,8 @@ const NAV_ITEMS = [
   { label: '냉동어류', href: '/products/frozen-fish' },
   { label: '어패·갑각류', href: '/products/seafood' },
   { label: '건어물', href: '/products/dried' },
-  { label: '굴비·선물세트', href: '/products/gift-set' },
+  { label: '굴비·선물세트', href: '/products/gulbi' },
+  { label: '해조류', href: '/products/seaweed' },
   { label: 'B2B 기업', href: '/business' },
 ];
 
@@ -24,9 +25,21 @@ export default function Navbar() {
   const [cartCount, setCartCount] = useState(0);
   const [user, setUser] = useState<User | null>(null);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const userMenuRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
+  const router = useRouter();
   const isHome = pathname === '/';
+
+  const submitSearch = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const q = searchQuery.trim();
+    setSearchOpen(false);
+    setMobileOpen(false);
+    if (q) router.push(`/products?q=${encodeURIComponent(q)}`);
+    else router.push('/products');
+  };
 
   useEffect(() => {
     const onScroll = () => {
@@ -79,7 +92,7 @@ export default function Navbar() {
     <header className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ${
       isExpanded
         ? 'bg-white/0'
-        : 'bg-white/95 backdrop-blur-md shadow-md'
+        : 'bg-white shadow-md md:bg-white/95 md:backdrop-blur-md'
     }`}>
       {/* Scroll progress bar */}
       <div
@@ -139,10 +152,39 @@ export default function Navbar() {
 
         {/* Right */}
         <div className="flex items-center gap-2.5">
+          {/* Desktop 검색 박스 */}
+          <form onSubmit={submitSearch} className="relative hidden lg:block">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400">
+              <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+            </svg>
+            <input
+              type="search"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              placeholder="상품 검색"
+              className="w-48 rounded-full border border-gray-200 bg-gray-50 py-2 pl-9 pr-3 text-sm text-gray-800 placeholder:text-gray-400 focus:w-64 focus:border-ocean-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-ocean-400/30 transition-all"
+            />
+          </form>
+
+          {/* Mobile/Tablet 검색 아이콘 */}
+          <button
+            onClick={() => setSearchOpen(!searchOpen)}
+            className="rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-ocean-600 lg:hidden"
+            aria-label="상품 검색"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" className="h-5 w-5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+            </svg>
+          </button>
+
           <Link href="/order-tracking" className="hidden text-sm text-gray-400 transition-colors hover:text-ocean-600 sm:block">주문조회</Link>
           <a href="https://seopung.co.kr/" target="_blank" rel="noopener noreferrer"
-            className="hidden rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-medium text-gray-500 transition-all hover:border-ocean-300 hover:text-ocean-600 sm:block">
-            회사소개
+            aria-label="서풍 홈페이지로 이동"
+            className="flex items-center gap-1 rounded-lg border border-gray-200 px-2.5 py-1.5 text-sm font-medium text-gray-600 transition-all hover:border-ocean-400 hover:bg-ocean-50 hover:text-ocean-600 sm:px-3">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.6} stroke="currentColor" className="h-4 w-4">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582" />
+            </svg>
+            <span className="hidden sm:inline">서풍 홈페이지</span>
           </a>
 
           {/* Cart */}
@@ -186,18 +228,40 @@ export default function Navbar() {
             </Link>
           )}
 
-          {/* Mobile hamburger */}
+          {/* Mobile hamburger / close */}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="relative z-50 flex h-10 w-10 flex-col items-center justify-center gap-1.5 rounded-lg md:hidden"
-            aria-label="메뉴 열기"
+            className={`relative z-50 flex h-10 w-10 flex-col items-center justify-center gap-1.5 rounded-lg transition-colors md:hidden ${mobileOpen ? 'bg-gray-100' : ''}`}
+            aria-label={mobileOpen ? '메뉴 닫기' : '메뉴 열기'}
           >
-            <span className={`h-0.5 w-5 rounded bg-gray-600 transition-all duration-300 ${mobileOpen ? 'translate-y-2 rotate-45 !bg-white' : ''}`} />
-            <span className={`h-0.5 w-5 rounded bg-gray-600 transition-all duration-300 ${mobileOpen ? 'opacity-0' : ''}`} />
-            <span className={`h-0.5 w-5 rounded bg-gray-600 transition-all duration-300 ${mobileOpen ? '-translate-y-2 -rotate-45 !bg-white' : ''}`} />
+            <span className={`h-0.5 w-6 rounded bg-gray-700 transition-all duration-300 ${mobileOpen ? 'translate-y-2 rotate-45' : ''}`} />
+            <span className={`h-0.5 w-6 rounded bg-gray-700 transition-all duration-300 ${mobileOpen ? 'opacity-0' : ''}`} />
+            <span className={`h-0.5 w-6 rounded bg-gray-700 transition-all duration-300 ${mobileOpen ? '-translate-y-2 -rotate-45' : ''}`} />
           </button>
         </div>
       </nav>
+
+      {/* Mobile/Tablet 검색 슬라이드 드롭다운 */}
+      <div className={`overflow-hidden border-b border-gray-100 bg-white transition-all duration-300 lg:hidden ${searchOpen ? 'max-h-20 opacity-100' : 'max-h-0 opacity-0'}`}>
+        <form onSubmit={submitSearch} className="mx-auto flex max-w-7xl items-center gap-2 px-4 py-3">
+          <div className="relative flex-1">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400">
+              <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+            </svg>
+            <input
+              type="search"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              placeholder="상품명, 분류, 태그로 검색"
+              autoFocus={searchOpen}
+              className="w-full rounded-full border border-gray-200 bg-gray-50 py-2.5 pl-10 pr-3 text-base text-gray-800 placeholder:text-gray-400 focus:border-ocean-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-ocean-400/30"
+            />
+          </div>
+          <button type="submit" className="rounded-full bg-ocean-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-ocean-600">
+            검색
+          </button>
+        </form>
+      </div>
 
       {/* Bottom accent line */}
       <div className={`h-[1px] w-full transition-opacity duration-500 ${!isExpanded ? 'opacity-100' : 'opacity-0'}`}
@@ -207,6 +271,15 @@ export default function Navbar() {
       <div className={`fixed inset-0 z-40 bg-white/98 backdrop-blur-lg transition-all duration-500 md:hidden ${
         mobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
       }`}>
+        <button
+          onClick={() => setMobileOpen(false)}
+          aria-label="메뉴 닫기"
+          className="absolute right-4 top-4 z-[55] flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-700 shadow-md transition-all hover:border-ocean-300 hover:text-ocean-600"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.2} stroke="currentColor" className="h-5 w-5">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+          </svg>
+        </button>
         <div className="flex h-full flex-col items-center justify-center gap-1">
           {NAV_ITEMS.map((item, i) => (
             <Link key={item.href} href={item.href} onClick={() => setMobileOpen(false)}
@@ -247,9 +320,12 @@ export default function Navbar() {
             </Link>
           )}
           <a href="https://seopung.co.kr/" target="_blank" rel="noopener noreferrer"
-            className="mt-2 text-sm text-ocean-400 transition-all"
+            className="mt-4 inline-flex items-center gap-2 rounded-xl border border-ocean-200 bg-ocean-50 px-5 py-2.5 text-base font-semibold text-ocean-600 transition-all hover:border-ocean-400 hover:bg-ocean-100"
             style={{ transitionDelay: mobileOpen ? `${(NAV_ITEMS.length + 3) * 50}ms` : '0ms', opacity: mobileOpen ? 1 : 0 }}>
-            회사소개 홈페이지 &rarr;
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.6} stroke="currentColor" className="h-4 w-4">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582" />
+            </svg>
+            서풍 홈페이지 &rarr;
           </a>
         </div>
       </div>
