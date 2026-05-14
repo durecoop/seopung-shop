@@ -162,26 +162,24 @@ function ProductsPageInner() {
           {panelOpen && (
             <div className="absolute left-0 right-0 top-full z-30 rounded-b-xl border border-t-0 border-gray-200 bg-white p-5 shadow-lg">
               <p className="mb-3 font-[family-name:var(--font-montserrat)] text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">Categories</p>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
+              <div className="flex flex-wrap gap-2">
                 {categories.map((cat) => {
                   const count = categoryCounts.get(cat.slug) || 0;
                   return (
                     <Link key={cat.slug} href={`/products/${cat.slug}`}
                       onClick={() => setPanelOpen(false)}
-                      className="group flex flex-col items-center gap-2 rounded-xl border border-gray-100 bg-warm-50 p-3 transition hover:border-ocean-400 hover:bg-ocean-50">
-                      <div className="relative h-16 w-16 overflow-hidden rounded-full bg-white ring-1 ring-gray-100">
+                      className="group inline-flex items-center gap-2.5 whitespace-nowrap rounded-full border border-gray-200 bg-white py-1.5 pl-1.5 pr-4 transition hover:border-ocean-400 hover:bg-ocean-50">
+                      <span className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full bg-warm-50 ring-1 ring-gray-100">
                         {cat.imageUrl ? (
-                          <Image src={cat.imageUrl} alt={cat.name} fill className="object-cover" sizes="64px" />
+                          <Image src={cat.imageUrl} alt={cat.name} fill className="object-cover" sizes="32px" />
                         ) : (
-                          <div className="flex h-full w-full items-center justify-center text-2xl font-bold text-ocean-300">
+                          <span className="flex h-full w-full items-center justify-center text-sm font-bold text-ocean-400">
                             {cat.name.slice(0, 1)}
-                          </div>
+                          </span>
                         )}
-                      </div>
-                      <div className="text-center">
-                        <p className="text-sm font-semibold text-gray-800 group-hover:text-ocean-600">{cat.name}</p>
-                        <p className="text-xs text-gray-400">{count}개</p>
-                      </div>
+                      </span>
+                      <span className="text-sm font-semibold text-gray-800 group-hover:text-ocean-600">{cat.name}</span>
+                      <span className="text-xs text-gray-400">{count}</span>
                     </Link>
                   );
                 })}
@@ -191,7 +189,7 @@ function ProductsPageInner() {
               <div className="flex flex-wrap gap-2">
                 {POPULAR_TAGS.map((tag) => (
                   <button key={tag} type="button" onClick={() => handleTagClick(tag)}
-                    className="rounded-full bg-gray-50 px-3 py-1.5 text-sm text-gray-600 hover:bg-ocean-50 hover:text-ocean-600">
+                    className="whitespace-nowrap rounded-full bg-gray-50 px-3 py-1.5 text-sm text-gray-600 hover:bg-ocean-50 hover:text-ocean-600">
                     #{tag}
                   </button>
                 ))}
