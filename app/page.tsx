@@ -194,7 +194,7 @@ export default function ShopHome() {
               </Link>
             </div>
             <div className="relative aspect-[3/4] w-full overflow-hidden rounded-3xl border border-gold-300/30 shadow-xl shadow-gold-900/10 md:w-80">
-              <Image src="/images/gift.jpg" alt="전통 장인이 만드는 영광굴비 선물세트" fill className="object-cover" sizes="(max-width: 768px) 100vw, 320px" />
+              <Image src="/images/stock/hero-gulbi-real.jpg" alt="전통 장인이 만드는 영광굴비 선물세트" fill className="object-cover object-center" sizes="(max-width: 768px) 100vw, 320px" />
               <div className="absolute inset-0 bg-gradient-to-t from-gold-900/15 to-transparent" />
             </div>
           </div>
