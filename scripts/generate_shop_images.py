@@ -33,21 +33,27 @@ except ImportError:
 SHOP_ROOT = Path(r"D:/2_Projects/web/Maker_homepade/seopung-shop/public/images")
 
 STYLE_BASE = (
-    "professional food photography, natural soft daylight from window, "
-    "realistic texture, shallow depth of field, clean composition, "
-    "no text, no watermark, no labels, editorial magazine quality, "
-    "true-to-life colors, subtle film grain, shot on Canon 5D 85mm"
+    "authentic documentary food photography, bright natural daylight, "
+    "pure white or light wood background, crisp clean minimalist composition, "
+    "true-to-life natural colors, no color grading, no filter, no retouching, "
+    "no HDR look, no glow, no blue tint, no warm tint, "
+    "realistic unprocessed appearance, sharp focus throughout, "
+    "no text, no watermark, no labels, "
+    "modern contemporary Korean e-commerce product shot, "
+    "fresh vibrant youthful brand aesthetic, confident and progressive feel"
 )
 
 STYLE_PRODUCT = (
-    "product photography on light neutral linen or wooden surface, "
-    "top-down or 30-degree angle, soft shadows, bright airy atmosphere, "
-    "minimal props, Korean seafood market style, fresh and clean look, "
+    "clean studio product photography on pure white seamless background, "
+    "top-down or straight-on 45-degree angle, natural soft shadow, "
+    "bright and airy, minimal props, modern Korean online shop style, "
+    "crisp clear product focus, youthful and energetic mood, "
 ) + STYLE_BASE
 
 STYLE_CATEGORY = (
-    "lifestyle food scene, brightly lit Korean kitchen or market counter, "
-    "warm inviting atmosphere, soft bokeh background, "
+    "clean lifestyle product arrangement, bright light background, "
+    "modern minimalist styling, contemporary young Korean e-commerce look, "
+    "fresh optimistic mood, "
 ) + STYLE_BASE
 
 
@@ -57,8 +63,8 @@ IMAGES = [
     ("cat-frozen", "frozen.jpg", "1:1",
      "Assorted premium Korean frozen seafood neatly arranged on crushed ice: "
      "vacuum-packed mackerel fillets, hairtail slices, and peeled shrimp, "
-     "visible frost vapor, blue-tinted cool lighting emphasizing freshness, "
-     "white cold-storage background. " + STYLE_CATEGORY),
+     "light frost on surface, bright clean white background, natural daylight. "
+     + STYLE_CATEGORY),
 
     ("cat-mealkit", "mealkit.jpg", "1:1",
      "Korean meal kit package flat lay: fresh seafood stew ingredients in "
@@ -175,9 +181,10 @@ IMAGES = [
      + STYLE_PRODUCT),
 
     ("p-msc-pollock-1", "products/msc-pollock-1.jpg", "1:1",
-     "MSC-certified wild-caught pollock fillets, pristine white flesh with "
-     "delicate flake pattern, arranged on blue-tinted ice chips, clean "
-     "sustainable seafood presentation, cool daylight. " + STYLE_PRODUCT),
+     "MSC-certified wild-caught pollock fillets, natural white flesh with "
+     "delicate flake pattern, arranged on plain crushed ice, clean "
+     "sustainable seafood presentation, bright natural daylight. "
+     + STYLE_PRODUCT),
 ]
 
 
@@ -193,7 +200,7 @@ def generate(prompt: str, aspect: str) -> bytes | None:
                 "enable_safety_checker": True,
                 "safety_tolerance": "2",
                 "output_format": "jpeg",
-                "raw": False,
+                "raw": True,
             },
             with_logs=False,
         )

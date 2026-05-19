@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { getCartCount } from '@/lib/cart';
 import { auth } from '@/lib/firebase';
 import { onAuthStateChanged, signOut, type User } from 'firebase/auth';
@@ -25,21 +25,9 @@ export default function Navbar() {
   const [cartCount, setCartCount] = useState(0);
   const [user, setUser] = useState<User | null>(null);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
   const userMenuRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
-  const router = useRouter();
   const isHome = pathname === '/';
-
-  const submitSearch = (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    const q = searchQuery.trim();
-    setSearchOpen(false);
-    setMobileOpen(false);
-    if (q) router.push(`/products?q=${encodeURIComponent(q)}`);
-    else router.push('/products');
-  };
 
   useEffect(() => {
     const onScroll = () => {
@@ -152,31 +140,6 @@ export default function Navbar() {
 
         {/* Right */}
         <div className="flex items-center gap-2.5">
-          {/* Desktop 검색 박스 */}
-          <form onSubmit={submitSearch} className="relative hidden lg:block">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400">
-              <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-            </svg>
-            <input
-              type="search"
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              placeholder="상품 검색"
-              className="w-48 rounded-full border border-gray-200 bg-gray-50 py-2 pl-9 pr-3 text-sm text-gray-800 placeholder:text-gray-400 focus:w-64 focus:border-ocean-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-ocean-400/30 transition-all"
-            />
-          </form>
-
-          {/* Mobile/Tablet 검색 아이콘 */}
-          <button
-            onClick={() => setSearchOpen(!searchOpen)}
-            className="rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-ocean-600 lg:hidden"
-            aria-label="상품 검색"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" className="h-5 w-5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-            </svg>
-          </button>
-
           <Link href="/order-tracking" className="hidden text-sm text-gray-400 transition-colors hover:text-ocean-600 sm:block">주문조회</Link>
           <a href="https://seopung.co.kr/" target="_blank" rel="noopener noreferrer"
             aria-label="서풍 홈페이지로 이동"
@@ -240,28 +203,6 @@ export default function Navbar() {
           </button>
         </div>
       </nav>
-
-      {/* Mobile/Tablet 검색 슬라이드 드롭다운 */}
-      <div className={`overflow-hidden border-b border-gray-100 bg-white transition-all duration-300 lg:hidden ${searchOpen ? 'max-h-20 opacity-100' : 'max-h-0 opacity-0'}`}>
-        <form onSubmit={submitSearch} className="mx-auto flex max-w-7xl items-center gap-2 px-4 py-3">
-          <div className="relative flex-1">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400">
-              <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-            </svg>
-            <input
-              type="search"
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              placeholder="상품명, 분류, 태그로 검색"
-              autoFocus={searchOpen}
-              className="w-full rounded-full border border-gray-200 bg-gray-50 py-2.5 pl-10 pr-3 text-base text-gray-800 placeholder:text-gray-400 focus:border-ocean-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-ocean-400/30"
-            />
-          </div>
-          <button type="submit" className="rounded-full bg-ocean-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-ocean-600">
-            검색
-          </button>
-        </form>
-      </div>
 
       {/* Bottom accent line */}
       <div className={`h-[1px] w-full transition-opacity duration-500 ${!isExpanded ? 'opacity-100' : 'opacity-0'}`}

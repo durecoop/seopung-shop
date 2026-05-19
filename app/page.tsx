@@ -14,7 +14,8 @@ const CATEGORY_ICONS: Record<string, ReactNode> = {
   'frozen-fish': <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="h-7 w-7"><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" /></svg>,
   'seafood': <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="h-7 w-7"><path strokeLinecap="round" strokeLinejoin="round" d="M20.893 13.393l-1.135-1.135a2.252 2.252 0 0 1-.421-.585l-1.08-2.16a.414.414 0 0 0-.663-.107.827.827 0 0 1-.812.21l-1.273-.363a.89.89 0 0 0-.738 1.595l.587.39c.59.395.674 1.23.172 1.732l-.2.2c-.212.212-.33.498-.33.796v.41c0 .409-.11.809-.32 1.158l-1.315 2.191a2.11 2.11 0 0 1-1.81 1.025 1.055 1.055 0 0 1-1.055-1.055v-1.172c0-.92-.56-1.747-1.414-2.089l-.655-.261a2.25 2.25 0 0 1-1.383-2.46l.007-.042a2.25 2.25 0 0 1 .29-.787l.09-.15a2.25 2.25 0 0 1 2.37-1.048l1.178.236c1.602.32 2.228-1.907.665-2.396-.2-.063-.42-.048-.608.07l-.026.016a.75.75 0 0 1-.788-.076 1.645 1.645 0 0 0-1.812-.098L4.5 8.5" /></svg>,
   'dried': <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="h-7 w-7"><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v17.25m0 0c-1.472 0-2.882.265-4.185.75M12 20.25c1.472 0 2.882.265 4.185.75M18.75 4.97A48.416 48.416 0 0 0 12 4.5c-2.291 0-4.545.16-6.75.47m13.5 0c1.01.143 2.01.317 3 .52m-3-.52 2.62 10.726c.122.499-.106 1.028-.589 1.202a5.989 5.989 0 0 1-2.031.352 5.989 5.989 0 0 1-2.031-.352c-.483-.174-.711-.703-.59-1.202L18.75 4.971Zm-16.5.52c.99-.203 1.99-.377 3-.52m0 0 2.62 10.726c.122.499-.106 1.028-.589 1.202a5.989 5.989 0 0 1-2.031.352 5.989 5.989 0 0 1-2.031-.352c-.483-.174-.711-.703-.59-1.202L5.25 4.971Z" /></svg>,
-  'gift-set': <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="h-7 w-7"><path strokeLinecap="round" strokeLinejoin="round" d="M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 1 0 9.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1 1 14.625 7.5H12m0 0V21m-8.625-9.75h18c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125h-18c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" /></svg>,
+  'gulbi': <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="h-7 w-7"><path strokeLinecap="round" strokeLinejoin="round" d="M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 1 0 9.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1 1 14.625 7.5H12m0 0V21m-8.625-9.75h18c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125h-18c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" /></svg>,
+  'seaweed': <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="h-7 w-7"><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" /></svg>,
 };
 
 const DEFAULT_ICON = <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="h-7 w-7"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" /></svg>;
@@ -40,47 +41,68 @@ export default function ShopHome() {
       <Navbar />
 
       {/* ── Hero ── */}
-      <section className="relative flex min-h-[520px] items-center overflow-hidden pt-16 bg-gradient-to-br from-warm-50 via-white to-ocean-50">
+      <section className="relative overflow-hidden pt-24 md:pt-28 bg-gradient-to-br from-warm-50 via-white to-ocean-50">
         {/* Subtle background accents */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--color-coral-400)_0%,_transparent_50%)] opacity-[0.06]" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--color-gold-400)_0%,_transparent_40%)] opacity-[0.05]" />
 
-        <div className="relative z-10 mx-auto max-w-7xl px-6 py-16 lg:px-8 lg:py-20">
-          <div className="max-w-2xl">
+        {/* 잔잔한 파도 레이어 */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-0 overflow-hidden" aria-hidden="true">
+          <svg className="hero-wave-back block h-24 w-[200%] md:h-32" viewBox="0 0 2880 200" preserveAspectRatio="none">
+            <path d="M0,120 C240,80 480,160 720,120 C960,80 1200,160 1440,120 C1680,80 1920,160 2160,120 C2400,80 2640,160 2880,120 L2880,200 L0,200 Z" fill="var(--color-ocean-200)" opacity="0.35" />
+          </svg>
+          <svg className="hero-wave-mid absolute inset-x-0 bottom-0 block h-20 w-[200%] md:h-28" viewBox="0 0 2880 200" preserveAspectRatio="none">
+            <path d="M0,140 C320,100 640,180 960,140 C1280,100 1600,180 1920,140 C2240,100 2560,180 2880,140 L2880,200 L0,200 Z" fill="var(--color-ocean-300)" opacity="0.30" />
+          </svg>
+          <svg className="hero-wave-front absolute inset-x-0 bottom-0 block h-16 w-[200%] md:h-24" viewBox="0 0 2880 200" preserveAspectRatio="none">
+            <path d="M0,160 C360,130 720,190 1080,160 C1440,130 1800,190 2160,160 C2520,130 2880,190 2880,160 L2880,200 L0,200 Z" fill="var(--color-ocean-400)" opacity="0.22" />
+          </svg>
+        </div>
+
+        <div className="relative z-10 mx-auto grid max-w-7xl gap-10 px-6 py-16 lg:grid-cols-[1.1fr_1fr] lg:gap-16 lg:px-8 lg:py-20 lg:items-center">
+          <div>
             <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-coral-200 bg-coral-50 px-4 py-2">
               <span className="h-2 w-2 rounded-full bg-coral-500 animate-pulse" />
               <span className="font-[family-name:var(--font-montserrat)] text-base font-semibold tracking-wider text-coral-500">PREMIUM SEAFOOD</span>
             </div>
-            <h1 className="text-5xl font-bold leading-[1.1] text-gray-900 sm:text-6xl md:text-7xl lg:text-[5.5rem]">
-              지속가능한 바다의 맛,<br /><span className="text-ocean-500">서풍몰</span>
+            <h1 className="text-4xl font-bold leading-[1.15] text-gray-900 sm:text-5xl md:text-6xl lg:text-[4.5rem]">
+              지속가능한<br />바다의 맛,<br /><span className="text-ocean-500">서풍몰</span>
             </h1>
-            <p className="mt-6 max-w-lg text-xl leading-relaxed text-gray-700 md:text-2xl">
-              <span className="font-bold text-gray-900">HACCP · ASC · MSC 인증</span> 프리미엄 수산물을<br className="hidden sm:block" />산지에서 식탁까지 직송합니다.
+            <p className="mt-6 max-w-xl text-lg leading-relaxed text-gray-700 md:text-xl">
+              <span className="font-bold text-gray-900">HACCP · ASC · MSC 인증</span> 프리미엄 수산물을 산지에서 식탁까지 직송합니다.
             </p>
-            <div className="mt-5 inline-flex items-center gap-2 rounded-xl bg-ocean-600 px-5 py-3 text-white shadow-md">
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-              </svg>
-              <span className="text-base font-bold md:text-lg">쿠팡 최저가 대비 최대 <span className="text-gold-300">20% 저렴</span></span>
-            </div>
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-              <Link href="/products" className="group inline-flex items-center justify-center gap-2 rounded-xl bg-ocean-500 px-8 py-4 text-xl font-bold text-white shadow-lg shadow-ocean-500/20 transition-all hover:bg-ocean-600 hover:shadow-ocean-500/30">
+              <Link href="/products" className="group inline-flex items-center justify-center gap-2 rounded-xl bg-ocean-500 px-8 py-4 text-lg font-bold text-white shadow-lg shadow-ocean-500/20 transition-all hover:bg-ocean-600 hover:shadow-ocean-500/30 md:text-xl">
                 전체상품 보기
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="h-5 w-5 transition-transform group-hover:translate-x-1"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
               </Link>
-              <Link href="/products/gift-set" className="inline-flex items-center justify-center gap-2 rounded-xl border-2 border-gray-300 px-8 py-4 text-xl font-bold text-gray-700 transition-all hover:border-gold-500 hover:text-gold-500">
+              <Link href="/products/gulbi" className="inline-flex items-center justify-center gap-2 rounded-xl border-2 border-gray-300 px-8 py-4 text-lg font-bold text-gray-700 transition-all hover:border-gold-500 hover:text-gold-500 md:text-xl">
                 영광굴비 선물세트
               </Link>
             </div>
           </div>
 
-          {/* Trust badges */}
-          <div className="mt-14 grid gap-4 border-t border-gray-100 pt-8 sm:grid-cols-2 lg:grid-cols-4">
+          {/* Hero feast image */}
+          <div className="relative aspect-[3/4] w-full overflow-hidden rounded-3xl shadow-2xl shadow-ocean-900/20 ring-1 ring-gray-200 lg:max-w-[480px] lg:justify-self-end">
+            <Image
+              src="/images/stock/hero-feast-vertical.jpg"
+              alt="서풍의 화려한 수산물 한상 — 굴비·사시미·새우·가리비·해조류"
+              fill priority
+              className="object-cover"
+              sizes="(max-width: 1024px) 100vw, 480px"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent" />
+          </div>
+        </div>
+
+        {/* Trust badges */}
+        <div className="relative z-10 mx-auto max-w-7xl px-6 pb-14 lg:px-8">
+          <div className="grid gap-4 border-t border-gray-100 pt-8 sm:grid-cols-2 lg:grid-cols-4">
             {[
               { label: 'HACCP 인증', sub: '식품안전관리' },
               { label: 'ASC·MSC 인증', sub: '국제 수산 인증' },
               { label: '산지 직송', sub: '여수 당일 발송' },
-              { label: '5만원 이상', sub: '무료 배송' },
+              { label: '무료 배송', sub: '5만원 이상 구매 시' },
             ].map(item => (
               <div key={item.label} className="flex items-center gap-3 rounded-xl border border-gray-100 bg-white/70 px-4 py-3 shadow-sm">
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-fresh-50 ring-1 ring-fresh-200">
@@ -163,18 +185,17 @@ export default function ShopHome() {
               <h2 className="mt-6 text-4xl font-bold leading-tight text-gray-900 sm:text-5xl md:text-6xl">
                 전통 장인이 만드는<br /><span className="text-gold-500">영광굴비 선물세트</span>
               </h2>
-              <p className="mt-5 max-w-md text-xl leading-relaxed text-gray-700 md:text-2xl">
-                여수 직송 참조기를 전통 아가미 섭간으로 정성껏 숙성합니다.
-                특별한 날, 소중한 분께 정성을 전하세요.
+              <p className="mt-5 max-w-md text-lg leading-relaxed text-gray-700 md:text-xl">
+                여수 직송 참조기를 천일염으로 섶간하여 전통 엮걸이 방식으로 정성껏 숙성합니다. 특별한 날, 소중한 분께 정성을 전하세요.
               </p>
-              <Link href="/products/gift-set" className="group mt-6 inline-flex items-center gap-2 rounded-xl bg-gold-500 px-7 py-3.5 font-bold text-white shadow-lg shadow-gold-500/20 transition-all hover:bg-gold-400 hover:shadow-gold-500/30">
+              <Link href="/products/gulbi" className="group mt-6 inline-flex items-center gap-2 rounded-xl bg-gold-500 px-7 py-3.5 font-bold text-white shadow-lg shadow-gold-500/20 transition-all hover:bg-gold-400 hover:shadow-gold-500/30">
                 굴비 보러가기
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="h-4 w-4 transition-transform group-hover:translate-x-1"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
               </Link>
             </div>
-            <div className="relative h-64 w-full overflow-hidden rounded-3xl border border-gold-300/30 shadow-sm md:h-72 md:w-80">
-              <Image src="/images/stock/gulbi-gift.jpg" alt="영광굴비 선물세트" fill className="object-cover" sizes="(max-width: 768px) 100vw, 320px" />
-              <div className="absolute inset-0 bg-gradient-to-t from-gold-500/20 to-transparent" />
+            <div className="relative aspect-[3/4] w-full overflow-hidden rounded-3xl border border-gold-300/30 shadow-xl shadow-gold-900/10 md:w-80">
+              <Image src="/images/gift.jpg" alt="전통 장인이 만드는 영광굴비 선물세트" fill className="object-cover" sizes="(max-width: 768px) 100vw, 320px" />
+              <div className="absolute inset-0 bg-gradient-to-t from-gold-900/15 to-transparent" />
             </div>
           </div>
         </div>
