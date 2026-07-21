@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import VisitorCounter from '@/components/VisitorCounter';
 
 export default function Footer() {
   return (
@@ -67,8 +68,9 @@ export default function Footer() {
             </div>
           </div>
         </div>
-        <div className="mt-10 border-t border-gray-200 pt-6 text-center text-xs text-gray-400">
-          &copy; 2026 영어조합법인 서풍. All rights reserved.
+        <div className="mt-10 flex flex-col items-center gap-2 border-t border-gray-200 pt-6 text-xs text-gray-400 sm:flex-row sm:justify-between">
+          <span>&copy; 2026 영어조합법인 서풍. All rights reserved.</span>
+          <VisitorCounter />
         </div>
       </div>
     </footer>
